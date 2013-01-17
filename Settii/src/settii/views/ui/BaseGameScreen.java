@@ -36,14 +36,41 @@ public class BaseGameScreen implements IGameScreen {
     
     @Override
     public boolean onButtonDown(InputEvent e) {
-        return true;
+        Iterator<IScreenItem> it = screenItems.iterator();
+        
+        while(it.hasNext()) {
+            IScreenItem item = it.next();
+            if(item.onButtonDown(e)) {
+                return true;
+            }
+        }
+        
+        return false;
     }
     @Override
     public boolean onButtonUp(InputEvent e) {
-        return true;
+        Iterator<IScreenItem> it = screenItems.iterator();
+        
+        while(it.hasNext()) {
+            IScreenItem item = it.next();
+            if(item.onButtonUp(e)) {
+                return true;
+            }
+        }
+        
+        return false;
     }
     @Override
     public boolean onPointerMove(MouseEvent e) {
-        return true;
+        Iterator<IScreenItem> it = screenItems.iterator();
+        
+        while(it.hasNext()) {
+            IScreenItem item = it.next();
+            if(item.onPointerMove(e)) {
+                return true;
+            }
+        }
+        
+        return false;
     }
 }

@@ -37,6 +37,9 @@ public class RenderObject {
     public String getFilename() {
         return filename;
     }
+    public void setFilename(String file) {
+        filename = file;
+    }
     
     public void move(double x, double y) {
         this.x = x;

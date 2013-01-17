@@ -13,7 +13,7 @@ public class ActorFactory {
         return true;
     }
     
-    public GameActor createActor() {
+    public GameActor createActor(String resource) {
         GameActor actor = new GameActor();
         
         return actor;

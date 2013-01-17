@@ -7,6 +7,7 @@ import javax.swing.WindowConstants;
 import settii.logic.*;
 import settii.eventManager.*;
 import settii.input.*;
+import settii.views.HumanView;
 
 /**
  * Main application class, sits between the player and the game logic and stuff.
@@ -27,6 +28,7 @@ public class Application {
     private Canvas canvas;
     
     private GameLogic logic;
+    private HumanView humanView;
     private EventManager eventManager;
     private InputControl controller;
     
@@ -48,6 +50,13 @@ public class Application {
         return logic;
     }
     
+    public HumanView getHumanView() {
+        return humanView;
+    }
+    public void setHumanView(HumanView hv) {
+        humanView = hv;
+    }
+    
     public EventManager getEventManager() {
         return eventManager;
     }
@@ -62,16 +71,6 @@ public class Application {
      * @return was initialization succesful
      */
     public boolean init() {
-        logic = new GameLogic();
-        if(!logic.init()) {
-            return false;
-        }
-        
-        eventManager = new EventManager();
-        if(!eventManager.init()) {
-            return false;
-        }
-        
         quitting = false;
         lifetime = 0;
         
@@ -97,6 +96,18 @@ public class Application {
         canvas.addMouseMotionListener(new MouseControl(controller));
         canvas.addKeyListener(new KeyControl(controller));
         
+        canvas.requestFocus();
+        
+        logic = new GameLogic();
+        if(!logic.init()) {
+            return false;
+        }
+        
+        eventManager = new EventManager();
+        if(!eventManager.init()) {
+            return false;
+        }
+        
         return true;
     }
     
@@ -105,8 +116,8 @@ public class Application {
      */
     public void run() {
         long currentTime = System.currentTimeMillis();
-        long lastTime = 0;
-        long deltaMs = 0;
+        long lastTime;
+        long deltaMs;
         
         while(!quitting) {
             lastTime = currentTime;
