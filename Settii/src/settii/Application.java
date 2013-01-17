@@ -9,6 +9,11 @@ import settii.eventManager.*;
 import settii.input.*;
 import settii.views.HumanView;
 
+import org.lwjgl.LWJGLException;
+import org.lwjgl.input.Mouse;
+import org.lwjgl.opengl.Display;
+import org.lwjgl.opengl.DisplayMode;
+
 /**
  * Main application class, sits between the player and the game logic and stuff.
  * 
@@ -74,37 +79,24 @@ public class Application {
         quitting = false;
         lifetime = 0;
         
-        // let's create the window!
-        frame = new JFrame("Game on!");
-        frame.setPreferredSize(new Dimension(WINDOW_WIDTH, WINDOW_HEIGHT));
-        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        
-        canvas = new Canvas();
-        canvas.setBounds(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
-        canvas.setIgnoreRepaint(true);
-        
-        frame.getContentPane().add(canvas);
-        
-        frame.setResizable(false);
-        frame.pack();
-        frame.setVisible(true);
-        
-        canvas.createBufferStrategy(2);
-        
-        controller = new InputControl();
-        canvas.addMouseListener(new MouseControl(controller));
-        canvas.addMouseMotionListener(new MouseControl(controller));
-        canvas.addKeyListener(new KeyControl(controller));
-        
-        canvas.requestFocus();
+        try {
+            Display.setDisplayMode(new DisplayMode(800,600));
+            Display.setTitle("Rockin' and rollin'!");
+            Display.create();
+        } catch (LWJGLException e) {
+            System.out.println("Error initializing display!");
+            return false;
+        }
         
         logic = new GameLogic();
         if(!logic.init()) {
+            System.out.println("Error initializing logic!");
             return false;
         }
         
         eventManager = new EventManager();
         if(!eventManager.init()) {
+            System.out.println("Error initializing event manager!");
             return false;
         }
         
@@ -119,7 +111,7 @@ public class Application {
         long lastTime;
         long deltaMs;
         
-        while(!quitting) {
+        while(!quitting && !Display.isCloseRequested()) {
             lastTime = currentTime;
             currentTime = System.currentTimeMillis();
             deltaMs = currentTime - lastTime;
@@ -127,6 +119,8 @@ public class Application {
             lifetime += deltaMs;
             
             logic.update(deltaMs);
+            
+            Display.update();
         }
     }
 }

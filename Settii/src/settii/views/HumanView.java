@@ -12,14 +12,14 @@ import java.util.Iterator;
 import settii.views.ui.*;
 import settii.Application;
 import settii.actorManager.GameActor;
+
+import org.lwjgl.opengl.GL11;
 /**
  *
  * @author Merioksan Mikko
  */
 public class HumanView implements IGameView {
     private double cameraX, cameraY;
-    private Canvas canvas;
-    private BufferStrategy bufferStrategy;
     
     private GameActor attachedActor;
     
@@ -37,11 +37,16 @@ public class HumanView implements IGameView {
     }
     
     public boolean init() {
+        GL11.glEnable(GL11.GL_TEXTURE_2D);
+        GL11.glDisable(GL11.GL_DEPTH_TEST);
+        
+        GL11.glMatrixMode(GL11.GL_PROJECTION);
+        GL11.glLoadIdentity();
+        
         if(!scene.init()) {
+            System.out.println("Error initializing the scene");
             return false;
         }
-        
-        bufferStrategy = Application.get().getCanvas().getBufferStrategy();
         
         return true;
     }
@@ -68,19 +73,9 @@ public class HumanView implements IGameView {
     
     @Override
     public void update(long deltaMs) {
-        Graphics2D g = (Graphics2D)bufferStrategy.getDrawGraphics();
-        g.clearRect(0, 0, Application.WINDOW_WIDTH, Application.WINDOW_HEIGHT);
         
-        scene.render(g);
         
-        Iterator<IGameScreen> it = screens.descendingIterator();
-        while(it.hasNext()) {
-            IGameScreen screen = it.next();
-            screen.render(g);
-        }
         
-        g.dispose();
-        bufferStrategy.show();
     }
     
     public void addScreen(IGameScreen screen) {
