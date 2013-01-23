@@ -9,7 +9,7 @@ import java.awt.Graphics2D;
  * @author Merioksan Mikko
  */
 public interface IGameScreen {
-    public void render(Graphics2D g);
+    public void render();
     public boolean onButtonDown(InputEvent e);
     public boolean onButtonUp(InputEvent e);
     public boolean onPointerMove(MouseEvent e);

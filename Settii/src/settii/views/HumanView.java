@@ -14,6 +14,9 @@ import settii.Application;
 import settii.actorManager.GameActor;
 
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.input.Keyboard;
+import org.lwjgl.input.Mouse;
+import org.lwjgl.opengl.Display;
 /**
  *
  * @author Merioksan Mikko
@@ -34,14 +37,18 @@ public class HumanView implements IGameView {
         screens = new ArrayDeque<IGameScreen>();
         playerWeapons = new ArrayList<Long>();
         selectedWeapons = new ArrayList<Long>();
+        
+        cameraX = cameraY = 0;
     }
     
     public boolean init() {
         GL11.glEnable(GL11.GL_TEXTURE_2D);
         GL11.glDisable(GL11.GL_DEPTH_TEST);
-        
+
         GL11.glMatrixMode(GL11.GL_PROJECTION);
         GL11.glLoadIdentity();
+        GL11.glOrtho(0, Display.getDisplayMode().getWidth(), Display.getDisplayMode().getHeight(), 0, -1, 1);
+        GL11.glMatrixMode(GL11.GL_MODELVIEW);
         
         if(!scene.init()) {
             System.out.println("Error initializing the scene");
@@ -49,6 +56,13 @@ public class HumanView implements IGameView {
         }
         
         return true;
+    }
+    
+    public double getCameraX() {
+        return cameraX;
+    }
+    public double getCameraY() {
+        return cameraY;
     }
     
     public GameActor getAttachedActor() {
@@ -73,9 +87,18 @@ public class HumanView implements IGameView {
     
     @Override
     public void update(long deltaMs) {
+        getInput();
         
+        // clear screen
+        GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
         
+        scene.render();
         
+        Iterator<IGameScreen> it = screens.descendingIterator();
+        while(it.hasNext()) {
+            IGameScreen screen = it.next();
+            screen.render();
+        }
     }
     
     public void addScreen(IGameScreen screen) {
@@ -86,6 +109,33 @@ public class HumanView implements IGameView {
     }
     public void clearScreens() {
         screens.clear();
+    }
+    
+    public void getInput() {
+        // test stuff
+        while (Keyboard.next()) {
+	    if (Keyboard.getEventKeyState()) {
+	        if (Keyboard.getEventKey() == Keyboard.KEY_A) {
+		    System.out.println("A Key Pressed");
+		}
+		if (Keyboard.getEventKey() == Keyboard.KEY_S) {
+		    System.out.println("S Key Pressed");
+		}
+		if (Keyboard.getEventKey() == Keyboard.KEY_D) {
+		    System.out.println("D Key Pressed");
+		}
+	    } else {
+	        if (Keyboard.getEventKey() == Keyboard.KEY_A) {
+		    System.out.println("A Key Released");
+	        }
+	    	if (Keyboard.getEventKey() == Keyboard.KEY_S) {
+		    System.out.println("S Key Released");
+		}
+		if (Keyboard.getEventKey() == Keyboard.KEY_D) {
+		    System.out.println("D Key Released");
+		}
+	    }
+	}
     }
     
     @Override

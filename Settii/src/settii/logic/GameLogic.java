@@ -17,14 +17,12 @@ public class GameLogic {
     private ActorManager actorManager;
     private ActorFactory actorFactory;
     private HashMap<Long, GameActor> actors;
-    private ArrayList<IGameView> views;
     private LevelLogic currentLevel;
     
     public GameLogic() {
         actorManager = new ActorManager();
         actorFactory = new ActorFactory();
         actors = new HashMap<Long, GameActor>();
-        views = new ArrayList<IGameView>();
         currentLevel = null;
     }
     
@@ -37,21 +35,10 @@ public class GameLogic {
             return false;
         }
         
-        // TODO replace this with proper initialization of views and stuff.
+        // TODO replace this with proper initialization of levels or somesuch stuff.
         currentLevel = new LevelLogic();
         
-        HumanView hv = new HumanView();
-        if(!hv.init()) {
-            return false;
-        }
-        addView(hv);
-        Application.get().setHumanView(hv);
-        
         return true;
-    }
-    
-    public void addView(IGameView view) {
-        views.add(view);
     }
     
     public void loadGame(String resource) {
@@ -65,12 +52,6 @@ public class GameLogic {
     public void update(long deltaMs) {
         if(currentLevel != null) {
             currentLevel.update(deltaMs);
-        }
-        
-        Iterator<IGameView> it = views.iterator();
-        while(it.hasNext()) {
-            IGameView view = it.next();
-            view.update(deltaMs);
         }
     }
     
@@ -97,41 +78,5 @@ public class GameLogic {
         }
         
         return null;
-    }
-    
-    public boolean onButtonDown(InputEvent e) {
-        Iterator<IGameView> it = views.iterator();
-        while(it.hasNext()) {
-            IGameView view = it.next();
-            if(view.onButtonDown(e)) {
-                return true;
-            }
-        }
-        
-        return false;
-    }
-    
-    public boolean onButtonUp(InputEvent e) {
-        Iterator<IGameView> it = views.iterator();
-        while(it.hasNext()) {
-            IGameView view = it.next();
-            if(view.onButtonUp(e)) {
-                return true;
-            }
-        }
-        
-        return false;
-    }
-    
-    public boolean onPointerMove(MouseEvent e) {
-        Iterator<IGameView> it = views.iterator();
-        while(it.hasNext()) {
-            IGameView view = it.next();
-            if(view.onPointerMove(e)) {
-                return true;
-            }
-        }
-        
-        return false;
     }
 }

@@ -13,6 +13,7 @@ import org.lwjgl.LWJGLException;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
+import org.lwjgl.opengl.GL11;
 
 /**
  * Main application class, sits between the player and the game logic and stuff.
@@ -27,10 +28,8 @@ public class Application {
     
     public static int WINDOW_WIDTH = 800;
     public static int WINDOW_HEIGHT = 640;
-    public long lifetime;
-    
-    private JFrame frame;
-    private Canvas canvas;
+    public static String WINDOW_TITLE = "Rockin' and rollin'!";
+    public static long lifetime;
     
     private GameLogic logic;
     private HumanView humanView;
@@ -45,10 +44,6 @@ public class Application {
     
     public static Application get() {
         return instance;
-    }
-    
-    public Canvas getCanvas() {
-        return canvas;
     }
     
     public GameLogic getLogic() {
@@ -80,8 +75,9 @@ public class Application {
         lifetime = 0;
         
         try {
-            Display.setDisplayMode(new DisplayMode(800,600));
-            Display.setTitle("Rockin' and rollin'!");
+            // initiate the window
+            Display.setDisplayMode(new DisplayMode(WINDOW_WIDTH, WINDOW_HEIGHT));
+            Display.setTitle(WINDOW_TITLE);
             Display.create();
         } catch (LWJGLException e) {
             System.out.println("Error initializing display!");
@@ -91,6 +87,12 @@ public class Application {
         logic = new GameLogic();
         if(!logic.init()) {
             System.out.println("Error initializing logic!");
+            return false;
+        }
+        
+        humanView = new HumanView();
+        if(!humanView.init()) {
+            System.out.println("Error initializing view!");
             return false;
         }
         
@@ -118,9 +120,12 @@ public class Application {
             
             lifetime += deltaMs;
             
-            logic.update(deltaMs);
-            
             Display.update();
+            logic.update(deltaMs);
+            humanView.update(deltaMs);
+            eventManager.update();
         }
+        
+        Display.destroy();
     }
 }
