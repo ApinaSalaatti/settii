@@ -29,6 +29,9 @@ public class Application {
     public static int WINDOW_WIDTH = 800;
     public static int WINDOW_HEIGHT = 640;
     public static String WINDOW_TITLE = "Rockin' and rollin'!";
+    public static boolean FULLSCREEN = false;
+    public static boolean VSYNC = true;
+    
     public static long lifetime;
     
     private GameLogic logic;
@@ -78,7 +81,14 @@ public class Application {
             // initiate the window
             Display.setDisplayMode(new DisplayMode(WINDOW_WIDTH, WINDOW_HEIGHT));
             Display.setTitle(WINDOW_TITLE);
+            Display.setResizable(true); //whether our window is resizable
+            Display.setVSyncEnabled(VSYNC); //whether hardware VSync is enabled
+            Display.setFullscreen(FULLSCREEN); //whether fullscreen is enabled
+
+            //create and show our display
             Display.create();
+            
+            resize();
         } catch (LWJGLException e) {
             System.out.println("Error initializing display!");
             return false;
@@ -106,6 +116,13 @@ public class Application {
     }
     
     /**
+     * Resize the window.
+     */
+    public void resize() {
+        GL11.glViewport(0, 0, Display.getWidth(), Display.getHeight());
+    }
+    
+    /**
      * Run the game!
      */
     public void run() {
@@ -120,10 +137,16 @@ public class Application {
             
             lifetime += deltaMs;
             
-            Display.update();
+            // If the game was resized, we need to update our projection
+            if (Display.wasResized()) {
+                    resize();
+            }
+            
             logic.update(deltaMs);
             humanView.update(deltaMs);
             eventManager.update();
+            
+            Display.update();
         }
         
         Display.destroy();

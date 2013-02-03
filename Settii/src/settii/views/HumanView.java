@@ -45,10 +45,12 @@ public class HumanView implements IGameView {
         GL11.glEnable(GL11.GL_TEXTURE_2D);
         GL11.glDisable(GL11.GL_DEPTH_TEST);
 
-        GL11.glMatrixMode(GL11.GL_PROJECTION);
-        GL11.glLoadIdentity();
-        GL11.glOrtho(0, Display.getDisplayMode().getWidth(), Display.getDisplayMode().getHeight(), 0, -1, 1);
-        GL11.glMatrixMode(GL11.GL_MODELVIEW);
+        // Enable blending
+        GL11.glEnable(GL11.GL_BLEND);
+        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+
+        // Set clear to transparent black
+        GL11.glClearColor(0f, 0f, 0f, 0f);
         
         if(!scene.init()) {
             System.out.println("Error initializing the scene");
@@ -90,7 +92,7 @@ public class HumanView implements IGameView {
         getInput();
         
         // clear screen
-        GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
+        GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
         
         scene.render();
         
