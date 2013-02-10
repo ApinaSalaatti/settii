@@ -1,4 +1,4 @@
-package settii.eventManager;
+package settii.eventManager.events;
 
 /**
  * Interface that all game events must implement.

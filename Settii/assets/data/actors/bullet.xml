@@ -1,0 +1,8 @@
+<Actor>
+	<PhysicsComponent>
+		<width>20</width>
+		<height>20</height>
+		<Rendering><default>assets/graphics/actors/bullet.png</default><selected>assets/graphics/actors/bullet.png</selected></Rendering>
+	</PhysicsComponent>
+	<WeaponsComponent></WeaponsComponent>
+</Actor>

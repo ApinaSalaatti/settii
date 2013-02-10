@@ -4,6 +4,7 @@ import settii.actorManager.BaseComponent;
 import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.Iterator;
+import org.w3c.dom.NodeList;
 /**
  *
  * @author Merioksan Mikko
@@ -39,5 +40,10 @@ public class HitboxComponent extends BaseComponent {
         }
         
         return false;
+    }
+    
+    @Override
+    public void createFromXML(NodeList attributes) {
+        
     }
 }

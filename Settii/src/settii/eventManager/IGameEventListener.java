@@ -1,5 +1,7 @@
 package settii.eventManager;
 
+import settii.eventManager.events.IGameEvent;
+
 /**
  * Interface that all event listener implement.
  * 

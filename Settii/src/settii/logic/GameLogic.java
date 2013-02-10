@@ -9,6 +9,8 @@ import java.util.ArrayList;
 import settii.Application;
 import settii.views.*;
 import settii.actorManager.components.*;
+import settii.eventManager.events.*;
+import settii.logic.listeners.*;
 /**
  *
  * @author Merioksan Mikko
@@ -24,6 +26,8 @@ public class GameLogic {
         actorFactory = new ActorFactory();
         actors = new HashMap<Long, GameActor>();
         currentLevel = null;
+        
+        Application.get().getEventManager().register(FireWeaponEvent.eventType, new FireWeaponListener(this));
     }
     
     public boolean init() {
@@ -58,7 +62,6 @@ public class GameLogic {
     public long createActor(String resource) {
         GameActor actor = actorFactory.createActor(resource);
         actors.put(actor.getID(), actor);
-        
         return actor.getID();
     }
     public void deleteActor(long id) {
@@ -78,5 +81,12 @@ public class GameLogic {
         }
         
         return null;
+    }
+    
+    public void fireWeaponListener(FireWeaponEvent fwe) {
+        GameActor actor = actors.get(fwe.getActor());
+        
+        WeaponsComponent wc = (WeaponsComponent)actor.getComponent("WeaponsComponent");
+        wc.fire();
     }
 }

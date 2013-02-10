@@ -1,61 +1,67 @@
-package settii.views;
+package settii.resourceManager;
 
-import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.color.ColorSpace;
-import java.awt.image.BufferedImage;
-import java.awt.image.ColorModel;
-import java.awt.image.ComponentColorModel;
-import java.awt.image.DataBuffer;
-import java.awt.image.DataBufferByte;
-import java.awt.image.Raster;
-import java.awt.image.WritableRaster;
-import java.io.BufferedInputStream;
+import java.awt.image.*;
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.nio.IntBuffer;
 import java.util.HashMap;
 import java.util.Hashtable;
-
 import javax.imageio.ImageIO;
 
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
+import settii.views.humanView.renderer.Texture;
 /**
  *
  * @author Merioksan Mikko
  */
-public class Texture {
-    public final int target = GL11.GL_TEXTURE_2D;
-    public int id;
-    private int width;
-    private int height;
-
+public class TextureManager {
     public static final int LINEAR = GL11.GL_LINEAR;
     public static final int NEAREST = GL11.GL_NEAREST;
 
     public static final int CLAMP = GL11.GL_CLAMP;
     public static final int CLAMP_TO_EDGE = GL12.GL_CLAMP_TO_EDGE;
     public static final int REPEAT = GL11.GL_REPEAT;
-
+    
+    public final int target = GL11.GL_TEXTURE_2D;
+    
     /** The colour model including alpha for the GL image */
     private ColorModel glAlphaColorModel;
 
     /** The colour model for the GL image */
     private ColorModel glColorModel;
-
-    public Texture(String resource) throws Exception {
-            this(resource, GL11.GL_NEAREST);
+    
+    /** Our textures safely stored in a hashmap */
+    private HashMap<String, Texture> textures;
+    
+    public TextureManager() {
+        textures = new HashMap<String, Texture>();
+    }
+    
+    public Texture getTexture(String tex) {
+        if(!textures.containsKey(tex)) {
+            try {
+                loadTexture(tex);
+            } catch(Exception e) {
+                System.out.println("Couldn't create texture!");
+            }
+        }
+        
+        return textures.get(tex);
     }
 
-    public Texture(String resource, int filter) throws Exception {
-            this(resource, filter, GL12.GL_CLAMP_TO_EDGE);
+    public void loadTexture(String resource) throws Exception {
+            loadTexture(resource, GL11.GL_NEAREST);
     }
 
-    public Texture(String resource, int filter, int wrap) throws Exception {
+    public void loadTexture(String resource, int filter) throws Exception {
+            loadTexture(resource, filter, GL12.GL_CLAMP_TO_EDGE);
+    }
+
+    public void loadTexture(String resource, int filter, int wrap) throws Exception {
         glAlphaColorModel = new ComponentColorModel(
             ColorSpace.getInstance(ColorSpace.CS_sRGB),
             new int[] {8,8,8,8},
@@ -77,19 +83,23 @@ public class Texture {
         try {
             //we are using RGBA, i.e. 4 components or "bytes per pixel"
             final int bpp = 4;
-
+            
+            Texture tex = new Texture();
+            
             //create a new byte buffer which will hold our pixel data
-            ByteBuffer buf = convertImageData(loadImage(resource));
+            ByteBuffer buf = convertImageData(loadImage(resource), tex);
 
             //flip the buffer into "read mode" for OpenGL
             buf.flip();
 
             //enable textures and generate an ID
             GL11.glEnable(target);
-            id = GL11.glGenTextures();
+            int id = GL11.glGenTextures();
 
+            tex.create(target, id);
+            
             //bind texture
-            bind();
+            GL11.glBindTexture(target, id);
 
             //setup unpack mode
             GL11.glPixelStorei(GL11.GL_UNPACK_ALIGNMENT, 1);
@@ -101,16 +111,14 @@ public class Texture {
             GL11.glTexParameteri(target, GL11.GL_TEXTURE_WRAP_T, wrap);
 
             //pass RGBA data to OpenGL
-            GL11.glTexImage2D(target, 0, GL11.GL_RGBA, width, height, 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, buf);
+            GL11.glTexImage2D(target, 0, GL11.GL_RGBA, tex.getWidth(), tex.getHeight(), 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, buf);
+            
+            textures.put(resource, tex);
         } catch(Exception e) {
             e.printStackTrace();
         }
     }
-
-    public void bind() {
-        GL11.glBindTexture(target, id);
-    }
-
+    
     /**
      * Convert the buffered image to a texture
      *
@@ -118,7 +126,7 @@ public class Texture {
      * @param texture The texture to store the data into
      * @return A buffer containing the data
      */
-    private ByteBuffer convertImageData(BufferedImage bufferedImage) { 
+    private ByteBuffer convertImageData(BufferedImage bufferedImage, Texture tex) { 
         ByteBuffer imageBuffer = null; 
         WritableRaster raster;
         BufferedImage texImage;
@@ -137,8 +145,8 @@ public class Texture {
             texHeight *= 2;
         }
         
-        width = texWidth;
-        height = texHeight;
+        tex.setWidth(texWidth);
+        tex.setHeight(texHeight);
         
         // create a raster that can be used by OpenGL as a source
 
@@ -155,7 +163,7 @@ public class Texture {
         // copy the source image into the produced image
 
         Graphics g = texImage.getGraphics();
-        g.setColor(new Color(0f,0f,0f,0f));
+        g.setColor(new java.awt.Color(0f,0f,0f,0f));
         g.fillRect(0,0,texWidth,texHeight);
         g.drawImage(bufferedImage,0,0,null);
         
@@ -184,26 +192,5 @@ public class Texture {
         BufferedImage bufferedImage = ImageIO.read(new File(ref));
  
         return bufferedImage;
-    }
-    
-    public int getWidth() {
-        return width;
-    }
-    
-    public int getHeight() {
-        return height;
-    }
-    
-    public float getU() {
-        return 0f;
-    }
-    public float getV() {
-        return 0f;
-    }
-    public float getU2() {
-        return 1f;
-    }
-    public float getV2() {
-        return 1f;
     }
 }

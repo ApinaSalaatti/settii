@@ -7,7 +7,9 @@ import javax.swing.WindowConstants;
 import settii.logic.*;
 import settii.eventManager.*;
 import settii.input.*;
-import settii.views.HumanView;
+import settii.views.humanView.HumanView;
+import settii.views.humanView.renderer.Renderer;
+import settii.resourceManager.ResourceManager;
 
 import org.lwjgl.LWJGLException;
 import org.lwjgl.input.Mouse;
@@ -33,6 +35,8 @@ public class Application {
     public static boolean VSYNC = true;
     
     public static long lifetime;
+    
+    private ResourceManager resManager;
     
     private GameLogic logic;
     private HumanView humanView;
@@ -68,6 +72,10 @@ public class Application {
         return controller;
     }
     
+    public ResourceManager getResourceManager() {
+        return resManager;
+    }
+    
     /**
      * Initialize stuff. Do it here so the constructor can't fail.
      * 
@@ -89,10 +97,20 @@ public class Application {
             Display.create();
             
             resize();
+            
+            Renderer.create();
         } catch (LWJGLException e) {
             System.out.println("Error initializing display!");
             return false;
         }
+        
+        eventManager = new EventManager();
+        if(!eventManager.init()) {
+            System.out.println("Error initializing event manager!");
+            return false;
+        }
+        
+        resManager = new ResourceManager();
         
         logic = new GameLogic();
         if(!logic.init()) {
@@ -103,12 +121,6 @@ public class Application {
         humanView = new HumanView();
         if(!humanView.init()) {
             System.out.println("Error initializing view!");
-            return false;
-        }
-        
-        eventManager = new EventManager();
-        if(!eventManager.init()) {
-            System.out.println("Error initializing event manager!");
             return false;
         }
         

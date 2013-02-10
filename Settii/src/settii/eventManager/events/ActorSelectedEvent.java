@@ -4,13 +4,13 @@ package settii.eventManager.events;
  *
  * @author Merioksan Mikko
  */
-public class FireWeaponEvent implements IGameEvent {
-    public static long eventType = 1;
+public class ActorSelectedEvent implements IGameEvent {
+    public static long eventType = 6;
     
     private long actor;
     
-    public FireWeaponEvent(long actor) {
-        this.actor = actor;
+    public ActorSelectedEvent(long id) {
+        actor = id;
     }
     
     @Override

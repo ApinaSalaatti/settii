@@ -23,24 +23,50 @@ public class BaseGameScreen implements IGameScreen {
     }
     
     @Override
-    public void render(Graphics2D g) {
+    public void render() {
         Iterator<IScreenItem> it = screenItems.descendingIterator();
         
         while(it.hasNext()) {
             IScreenItem item = it.next();
             if(item.isVisible()) {
-                item.render(g);
+                item.render();
             }
         }
     }
     
     @Override
-    public boolean onButtonDown(InputEvent e) {
+    public boolean onMouseDown(int mX, int mY, int button) {
         Iterator<IScreenItem> it = screenItems.iterator();
         
         while(it.hasNext()) {
             IScreenItem item = it.next();
-            if(item.onButtonDown(e)) {
+            if(item.onMouseDown(mX, mY, button)) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    @Override
+    public boolean onMouseUp(int mX, int mY, int button) {
+        Iterator<IScreenItem> it = screenItems.iterator();
+        
+        while(it.hasNext()) {
+            IScreenItem item = it.next();
+            if(item.onMouseUp(mX, mY, button)) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    @Override
+    public boolean onKeyDown(int key) {
+        Iterator<IScreenItem> it = screenItems.iterator();
+        
+        while(it.hasNext()) {
+            IScreenItem item = it.next();
+            if(item.onKeyDown(key)) {
                 return true;
             }
         }
@@ -48,12 +74,12 @@ public class BaseGameScreen implements IGameScreen {
         return false;
     }
     @Override
-    public boolean onButtonUp(InputEvent e) {
+    public boolean onKeyUp(int key) {
         Iterator<IScreenItem> it = screenItems.iterator();
         
         while(it.hasNext()) {
             IScreenItem item = it.next();
-            if(item.onButtonUp(e)) {
+            if(item.onKeyUp(key)) {
                 return true;
             }
         }
@@ -61,12 +87,12 @@ public class BaseGameScreen implements IGameScreen {
         return false;
     }
     @Override
-    public boolean onPointerMove(MouseEvent e) {
+    public boolean onPointerMove(int mDX, int mDY) {
         Iterator<IScreenItem> it = screenItems.iterator();
         
         while(it.hasNext()) {
             IScreenItem item = it.next();
-            if(item.onPointerMove(e)) {
+            if(item.onPointerMove(mDX, mDY)) {
                 return true;
             }
         }

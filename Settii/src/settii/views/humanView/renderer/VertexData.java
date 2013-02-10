@@ -1,4 +1,4 @@
-package settii.views;
+package settii.views.humanView.renderer;
 
 import java.nio.FloatBuffer;
 /**

@@ -69,22 +69,32 @@ public class BaseScreenItem implements IScreenItem {
     }
     
     @Override
-    public void render(Graphics2D g) {
-        g.fillRect((int)x, (int)y, (int)width, (int)height);
+    public void render() {
     }
     
     @Override
-    public boolean onButtonDown(InputEvent e) {
+    public boolean onKeyDown(int key) {
+        return false;
+    }
+    @Override
+    public boolean onKeyUp(int key) {
+        return false;
+    }
+    
+    @Override
+    public boolean onMouseDown(int mX, int mY, int button) {
         clicked = true;
         return false;
     }
+    
     @Override
-    public boolean onButtonUp(InputEvent e) {
+    public boolean onMouseUp(int mX, int mY, int button) {
         clicked = false;
         return false;
     }
+    
     @Override
-    public boolean onPointerMove(MouseEvent e) {
+    public boolean onPointerMove(int mDX, int mDY) {
         return false;
     }
 }

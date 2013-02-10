@@ -10,8 +10,10 @@ import java.awt.Graphics2D;
  */
 public interface IGameScreen {
     public void render();
-    public boolean onButtonDown(InputEvent e);
-    public boolean onButtonUp(InputEvent e);
-    public boolean onPointerMove(MouseEvent e);
+    public boolean onMouseDown(int mX, int mY, int button);
+    public boolean onMouseUp(int mX, int mY, int button);
+    public boolean onKeyDown(int key);
+    public boolean onKeyUp(int key);
+    public boolean onPointerMove(int mDX, int mDY);
     public void addScreenItem(IScreenItem item);
 }

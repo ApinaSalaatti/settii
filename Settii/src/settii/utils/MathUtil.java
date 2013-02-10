@@ -1,11 +1,32 @@
-package settii.views;
+package settii.utils;
 
 import org.lwjgl.util.vector.Matrix4f;
 /**
- *
+ * Cool math stuff!
+ * 
  * @author Merioksan Mikko
  */
 public class MathUtil {
+    public static float PI = 3.141592653589793f;
+    
+    /*
+     * Converts given degree angle to radians.
+     * 
+     * @param rad
+     * @return
+     */
+    public float degToRad(float deg) {
+        return deg * (PI / 180.0f);
+    }
+    /**
+     * Converts given radian angle to degrees.
+     * 
+     * @param rad
+     * @return 
+     */
+    public float radToDeg(float rad) {
+        return rad * (180.0f / PI);
+    }
     /**
     * Sets the given matrix to an orthographic 2D projection matrix, and returns it. If the given matrix
     * is null, a new one will be created and returned.

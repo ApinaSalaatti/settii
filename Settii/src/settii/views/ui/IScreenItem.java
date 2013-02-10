@@ -1,6 +1,5 @@
 package settii.views.ui;
 
-import java.awt.Graphics2D;
 import java.awt.event.InputEvent;
 import java.awt.event.MouseEvent;
 /**
@@ -8,14 +7,16 @@ import java.awt.event.MouseEvent;
  * @author Merioksan Mikko
  */
 public interface IScreenItem {
-    public void render(Graphics2D g);
+    public void render();
     public boolean isVisible();
     public boolean isSelected();
     public boolean isClicked();
     public boolean beingDragged();
-    public boolean onButtonDown(InputEvent e);
-    public boolean onButtonUp(InputEvent e);
-    public boolean onPointerMove(MouseEvent e);
+    public boolean onMouseDown(int mX, int mY, int button);
+    public boolean onMouseUp(int mX, int mY, int button);
+    public boolean onKeyDown(int key);
+    public boolean onKeyUp(int key);
+    public boolean onPointerMove(int mDX, int mDY);
     public double getX();
     public double getY();
     public double getWidth();

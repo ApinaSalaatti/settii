@@ -1,5 +1,7 @@
-package settii.views;
+package settii.views.humanView.renderer;
 
+import settii.views.humanView.renderer.ShaderProgram;
+import settii.views.humanView.renderer.Color;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.LWJGLException;
@@ -10,6 +12,8 @@ import java.util.List;
 
 import org.lwjgl.opengl.Display;
 import org.lwjgl.util.vector.Matrix4f;
+import settii.utils.MathUtil;
+import settii.Application;
 
 /**
  *
@@ -23,17 +27,29 @@ public class SpriteBatch {
     public static final String ATTR_POSITION = "Position";
     public static final String ATTR_TEXCOORD = "TexCoord";
 
-    public static final String DEFAULT_VERT_SHADER = "uniform mat4 " + U_PROJ_VIEW + ";\n"
-        + "attribute vec4 " + ATTR_COLOR + ";\n" + "attribute vec2 " + ATTR_TEXCOORD + ";\n"
-        + "attribute vec2 " + ATTR_POSITION + ";\n" + "varying vec4 vColor;\n"
-        + "varying vec2 vTexCoord; \n" + "void main() {\n" + " vColor = " + ATTR_COLOR + ";\n"
-        + " vTexCoord = " + ATTR_TEXCOORD + ";\n" + " gl_Position = " + U_PROJ_VIEW
-        + " * vec4(" + ATTR_POSITION + ".xy, 0.0, 1.0);\n" + "}";
+    public static final String DEFAULT_VERT_SHADER = 
+          "uniform mat4 " + U_PROJ_VIEW + ";\n"
+        + "attribute vec4 " + ATTR_COLOR + ";\n"
+        + "attribute vec2 " + ATTR_TEXCOORD + ";\n"
+        + "attribute vec2 " + ATTR_POSITION + ";\n"
+        + "uniform vec2 offset;\n"
+        + "varying vec4 vColor;\n"
+        + "varying vec2 vTexCoord; \n"
+        + "void main() {\n"
+        + "vColor = " + ATTR_COLOR + ";\n"
+        + "vTexCoord = " + ATTR_TEXCOORD + ";\n"
+        + ATTR_POSITION + " = " + ATTR_POSITION + " + offset;\n"
+        + "gl_Position = " + U_PROJ_VIEW + "* vec4(" + ATTR_POSITION + ".xy, 0.0, 1.0);\n"
+        + "}";
 
-    public static final String DEFAULT_FRAG_SHADER = "uniform sampler2D " + U_TEXTURE + ";\n"
-        + "varying vec4 vColor;\n" + "varying vec2 vTexCoord;\n" + "void main() {\n"
-        + " vec4 texColor = texture2D(" + U_TEXTURE + ", vTexCoord);\n"
-        + " gl_FragColor = vColor * texColor;\n" + "}";
+    public static final String DEFAULT_FRAG_SHADER = 
+          "uniform sampler2D " + U_TEXTURE + ";\n"
+        + "varying vec4 vColor;\n"
+        + "varying vec2 vTexCoord;\n"
+        + "void main() {\n"
+        + "vec4 texColor = texture2D(" + U_TEXTURE + ", vTexCoord);\n"
+        + "gl_FragColor = vColor * texColor;\n"
+        + "}";
 
     public static final List<VertexAttrib> ATTRIBUTES = Arrays.asList(
         new VertexAttrib(0, ATTR_POSITION, 2),
@@ -353,7 +369,7 @@ public class SpriteBatch {
         idx += 6;
     }
     
-    VertexData vertex(float x, float y, float r, float g, float b, float a, float u, float v) {
+    private VertexData vertex(float x, float y, float r, float g, float b, float a, float u, float v) {
         data.put(x).put(y).put(r).put(g).put(b).put(a).put(u).put(v);
         idx++;
         return data;
@@ -361,7 +377,7 @@ public class SpriteBatch {
     
     protected void checkFlush(Texture sprite) {
         if (sprite == null)
-        throw new NullPointerException("null texture");
+            throw new NullPointerException("null texture");
 
         // we need to bind a different texture/type. this is
         // for convenience; ideally the user should order

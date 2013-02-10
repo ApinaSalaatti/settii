@@ -1,5 +1,6 @@
 package settii.eventManager;
 
+import settii.eventManager.events.IGameEvent;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -62,7 +63,6 @@ public class EventManager {
     }
     
     public boolean init() {
-        
         return true;
     }
 }
