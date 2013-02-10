@@ -24,17 +24,12 @@ public class HumanView implements IGameView {
     
     private GameActor attachedActor;
     
-    ArrayList<Long> playerWeapons;
-    ArrayList<Long> selectedWeapons;
-    
     private GameScene scene;
     private ArrayDeque<IGameScreen> screens;
 
     public HumanView() {
         scene = new GameScene();
         screens = new ArrayDeque<IGameScreen>();
-        playerWeapons = new ArrayList<Long>();
-        selectedWeapons = new ArrayList<Long>();
         
         camera = new Camera();
     }
@@ -44,10 +39,7 @@ public class HumanView implements IGameView {
             System.out.println("Error initializing the scene");
             return false;
         }
-        
-        Application.get().getEventManager().register(ActorSelectedEvent.eventType, new ActorSelectedListener(this));
-        Application.get().getEventManager().register(SelectedActorsClearedEvent.eventType, new SelectedActorsClearedListener(this));
-        
+       
         return true;
     }
 
@@ -56,17 +48,6 @@ public class HumanView implements IGameView {
     }
     public void attachActor(GameActor actor) {
         attachedActor = actor;
-    }
-    
-    public ArrayList<Long> getPlayerWeapons() {
-        return playerWeapons;
-    }
-    public ArrayList<Long> getSelectedWeapons() {
-        return selectedWeapons;
-    }
-    public void removeSelectedWeapon(long id) {
-        selectedWeapons.remove(id);
-        scene.setGraphic(id, "default");
     }
     
     @Override
@@ -83,16 +64,16 @@ public class HumanView implements IGameView {
         float y = -camera.getY();
         
         // render the actors
+        Renderer.get().setOffset(x, y);
         Renderer.get().begin();
-        Renderer.get().getSpriteBatch().getShader().setUniformf("offset", x, y);
         scene.render();
         Renderer.get().end();
         
         
         // render user interface stuff
-        Renderer.get().begin();
         // set offset uniform to zero for user interface rendering
-        Renderer.get().getSpriteBatch().getShader().setUniformf("offset", 0, 0);
+        Renderer.get().setOffset(0, 0);
+        Renderer.get().begin();
         Iterator<IGameScreen> it = screens.descendingIterator();
         while(it.hasNext()) {
             IGameScreen screen = it.next();
@@ -157,13 +138,11 @@ public class HumanView implements IGameView {
             }
         }
         
-        if(scene.onKeyDown(key)) {
-            return true;
-        }
-        
         if(camera.onKeyDown(key)) {
             return true;
         }
+        
+        Application.get().getEventManager().queueEvent(new KeyDownEvent(key));
         
         return false;
     }
@@ -179,13 +158,11 @@ public class HumanView implements IGameView {
             }
         }
         
-        if(scene.onKeyUp(key)) {
-            return true;
-        }
-        
         if(camera.onKeyUp(key)) {
             return true;
         }
+        
+        Application.get().getEventManager().queueEvent(new KeyUpEvent(key));
         
         return false;
     }
@@ -202,19 +179,14 @@ public class HumanView implements IGameView {
         }
         
         // to change mouse coordinates to "world" coordinates, we must take camera location to accord
-        mX = (int)Math.abs(mX - camera.getX());
-        mY = (int)Math.abs(mY - camera.getY());
-        if(scene.onMouseDown(mX, mY, button)) {
-            return true;
-        }
+        mX = (int)(mX + camera.getX());
+        mY = (int)(mY + camera.getY());
         
         if(camera.onMouseDown(mX, mY, button)) {
             return true;
         }
         
-        for(long a : selectedWeapons) {
-            Application.get().getEventManager().queueEvent(new FireWeaponEvent(a));
-        }
+        Application.get().getEventManager().queueEvent(new MouseDownEvent(mX, mY, button));
         
         return false;
     }
@@ -231,15 +203,14 @@ public class HumanView implements IGameView {
         }
         
         // to change mouse coordinates to "world" coordinates, we must take camera location into accord
-        mX = (int)Math.abs(mX - camera.getX());
-        mY = (int)Math.abs(mY - camera.getY());
-        if(scene.onMouseUp(mX, mY, button)) {
-            return true;
-        }
+        mX = (int)(mX + camera.getX());
+        mY = (int)(mY + camera.getY());
         
         if(camera.onMouseUp(mX, mY, button)) {
             return true;
         }
+        
+        Application.get().getEventManager().queueEvent(new MouseUpEvent(mX, mY, button));
         
         return false;
     }
@@ -255,26 +226,12 @@ public class HumanView implements IGameView {
             }
         }
         
-        if(scene.onPointerMove(mDX, mDY)) {
-            return true;
-        }
-        
         if(camera.onPointerMove(mDX, mDY)) {
             return true;
         }
         
+        Application.get().getEventManager().queueEvent(new PointerMoveEvent(mDX, mDY));
+        
         return false;
-    }
-    
-    public void actorSelectedListener(ActorSelectedEvent ase) {
-        selectedWeapons.add(ase.getActor());
-        scene.setGraphic(ase.getActor(), "selected");
-    }
-    
-    public void selectedActorsClearedListener() {
-        for(long id : selectedWeapons) {
-            scene.setGraphic(id, "default");
-        }
-        selectedWeapons.clear();
     }
 }

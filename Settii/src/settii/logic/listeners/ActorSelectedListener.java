@@ -1,24 +1,24 @@
-package settii.views.humanView.listeners;
+package settii.logic.listeners;
 
 import settii.eventManager.IGameEventListener;
 import settii.eventManager.events.IGameEvent;
 import settii.eventManager.events.ActorSelectedEvent;
-import settii.views.humanView.HumanView;
+import settii.logic.SettiLogic;
 /**
  *
  * @author Merioksan Mikko
  */
 public class ActorSelectedListener implements IGameEventListener {
-    private HumanView hv;
+    private SettiLogic sl;
     
-    public ActorSelectedListener(HumanView hv) {
-        this.hv = hv;
+    public ActorSelectedListener(SettiLogic sl) {
+        this.sl = sl;
     }
 
     @Override
     public void execute(IGameEvent event) {
         ActorSelectedEvent ase = (ActorSelectedEvent)event;
         
-        hv.actorSelectedListener(ase);
+        sl.actorSelectedListener(ase);
     }
 }

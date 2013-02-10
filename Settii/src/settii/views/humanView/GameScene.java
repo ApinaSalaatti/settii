@@ -1,7 +1,6 @@
 package settii.views.humanView;
 
-import settii.views.humanView.listeners.RenderableActorCreatedListener;
-import settii.views.humanView.listeners.ActorMovedListener;
+import settii.views.humanView.listeners.*;
 import settii.actorManager.components.*;
 import settii.views.humanView.RenderObject;
 import settii.views.humanView.renderer.Renderer;
@@ -32,6 +31,7 @@ public class GameScene {
         renderableActors = new HashMap<Long, RenderObject>();
         
         // register for interesting events
+        Application.get().getEventManager().register(ActorTextureChangeEvent.eventType, new ActorTextureChangeListener(this));
         Application.get().getEventManager().register(RenderableActorCreatedEvent.eventType, new RenderableActorCreatedListener(this));
         Application.get().getEventManager().register(ActorMovedEvent.eventType, new ActorMovedListener(this));
     }
@@ -46,47 +46,11 @@ public class GameScene {
         return initialized;
     }
     
-    public void setGraphic(long actor, String file) {
-        RenderObject ro = renderableActors.get(actor);
-        if(ro != null) {
-            ro.setFile(file);
-        }
-    }
-    
     public void render() {
         Collection<RenderObject> objects = renderableActors.values();
         for(RenderObject ro : objects) {
             Renderer.get().draw(ro);
         }
-    }
-    
-    public boolean onKeyDown(int key) {
-        return false;
-    }
-    
-    public boolean onKeyUp(int key) {
-        return false;
-    }
-    
-    public boolean onMouseDown(int mX, int mY, int button) {
-        if(button == 0) {
-            if(Application.get().getLogic().getActorAtLoc(mX, mY) != null) {
-                long id = Application.get().getLogic().getActorAtLoc(mX, mY).getID();
-                Application.get().getEventManager().queueEvent(new ActorSelectedEvent(id));
-            }
-        }
-        else if(button == 1) {
-            Application.get().getEventManager().queueEvent(new SelectedActorsClearedEvent());
-        }
-        return false;
-    }
-    
-    public boolean onMouseUp(int mX, int mY, int button) {
-        return false;
-    }
-    
-    public boolean onPointerMove(int mDX, int mDY) {
-        return false;
     }
     
     public void RenderableActorCreatedListener(RenderableActorCreatedEvent race) {
@@ -98,6 +62,13 @@ public class GameScene {
         PhysicsComponent pc = (PhysicsComponent)Application.get().getLogic().getActor(ame.getActor()).getComponent("PhysicsComponent");
         if(ro != null && pc != null) {
             ro.move(pc.getX(), pc.getY());
+        }
+    }
+    
+    public void ActorTextureChangeListener(ActorTextureChangeEvent atce) {
+        RenderObject ro = renderableActors.get(atce.getActor());
+        if(ro != null) {
+            ro.setFile(atce.getTexture());
         }
     }
 }

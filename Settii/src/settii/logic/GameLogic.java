@@ -19,15 +19,13 @@ public class GameLogic {
     private ActorManager actorManager;
     private ActorFactory actorFactory;
     private HashMap<Long, GameActor> actors;
-    private LevelLogic currentLevel;
+    private SettiLogic currentLevel;
     
     public GameLogic() {
         actorManager = new ActorManager();
         actorFactory = new ActorFactory();
         actors = new HashMap<Long, GameActor>();
         currentLevel = null;
-        
-        Application.get().getEventManager().register(FireWeaponEvent.eventType, new FireWeaponListener(this));
     }
     
     public boolean init() {
@@ -40,16 +38,16 @@ public class GameLogic {
         }
         
         // TODO replace this with proper initialization of levels or somesuch stuff.
-        currentLevel = new LevelLogic();
+        currentLevel = new SettiLogic(this);
         
         return true;
     }
     
     public void loadGame(String resource) {
-        currentLevel = new LevelLogic(resource);
+        currentLevel = new SettiLogic(resource);
     }
     
-    public LevelLogic getCurrentLevel() {
+    public SettiLogic getCurrentLevel() {
         return currentLevel;
     }
     

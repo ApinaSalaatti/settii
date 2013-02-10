@@ -10,6 +10,8 @@ import settii.utils.MathUtil;
 public class Renderer {
     private static Renderer instance = new Renderer();
     
+    private float offsetX, offsetY;
+    
     private SpriteBatch batch;
     
     public Renderer() {
@@ -17,7 +19,13 @@ public class Renderer {
             batch = new SpriteBatch();
         } catch(Exception e) {
             System.out.println("Renderer creation failed!");
+            e.printStackTrace();
         }
+    }
+    
+    public void setOffset(float x, float y) {
+        offsetX = x;
+        offsetY = y;
     }
     
     public static Renderer get() {
@@ -54,8 +62,10 @@ public class Renderer {
     }
     
     public void draw(RenderObject ro) {
+        float x = ro.getX() + offsetX;
+        float y = ro.getY() + offsetY;
         //System.out.println("Actor: " + ro.getActor() + ", x: " + ro.getX() + ", y: " + ro.getY());
-        batch.draw(ro.getTexture(), ro.getX(), ro.getY(), ro.getWidth(), ro.getHeight(), 0, 0, ro.getRotation(), ro.getTexture().getU(), ro.getTexture().getV(), ro.getTexture().getU2(), ro.getTexture().getV2());
+        batch.draw(ro.getTexture(), x, y, ro.getWidth(), ro.getHeight(), 0, 0, ro.getRotation(), ro.getTexture().getU(), ro.getTexture().getV(), ro.getTexture().getU2(), ro.getTexture().getV2());
     }
     
     public void draw(RenderObject ro, float width, float height) {

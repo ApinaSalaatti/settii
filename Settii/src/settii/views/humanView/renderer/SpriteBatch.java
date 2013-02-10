@@ -38,7 +38,7 @@ public class SpriteBatch {
         + "void main() {\n"
         + "vColor = " + ATTR_COLOR + ";\n"
         + "vTexCoord = " + ATTR_TEXCOORD + ";\n"
-        + ATTR_POSITION + " = " + ATTR_POSITION + " + offset;\n"
+        //+ ATTR_POSITION + " = " + ATTR_POSITION + " + offset;\n"
         + "gl_Position = " + U_PROJ_VIEW + "* vec4(" + ATTR_POSITION + ".xy, 0.0, 1.0);\n"
         + "}";
 
