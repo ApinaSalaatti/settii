@@ -22,7 +22,7 @@ import settii.views.humanView.listeners.*;
 public class HumanView implements IGameView {
     private Camera camera;
     
-    private GameActor attachedActor;
+    private long attachedActor;
     
     private GameScene scene;
     private ArrayDeque<IGameScreen> screens;
@@ -43,10 +43,10 @@ public class HumanView implements IGameView {
         return true;
     }
 
-    public GameActor getAttachedActor() {
+    public long getAttachedActor() {
         return attachedActor;
     }
-    public void attachActor(GameActor actor) {
+    public void attachActor(long actor) {
         attachedActor = actor;
     }
     

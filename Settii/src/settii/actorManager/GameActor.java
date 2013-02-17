@@ -37,7 +37,6 @@ public class GameActor {
         
         if(pc != null) {
             pc.setLocation(x, y);
-            Application.get().getEventManager().queueEvent(new ActorMovedEvent(actorID));
         }
     }
     

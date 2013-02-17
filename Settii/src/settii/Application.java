@@ -112,15 +112,15 @@ public class Application {
         
         resManager = new ResourceManager();
         
-        logic = new GameLogic();
-        if(!logic.init()) {
-            System.out.println("Error initializing logic!");
-            return false;
-        }
-        
         humanView = new HumanView();
         if(!humanView.init()) {
             System.out.println("Error initializing view!");
+            return false;
+        }
+        
+        logic = new GameLogic();
+        if(!logic.init()) {
+            System.out.println("Error initializing logic!");
             return false;
         }
         

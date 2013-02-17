@@ -1,0 +1,9 @@
+<Actor>
+	<StatusComponent>
+		<ActorType>player</ActorType>
+		<Allegiance>friendly</Allegiance>
+	</StatusComponent>
+	<InventoryComponent>
+		<money>1000</money>
+	</InventoryComponent>
+</Actor>

@@ -8,7 +8,8 @@ import org.lwjgl.util.vector.Matrix4f;
  */
 public class MathUtil {
     public static final float PI = 3.141592653589793f;
-    public static final float ANGLE_STRAIGHT_UP = (PI / 2.0f);
+    public static final float ANGLE_STRAIGHT_UP = PI / 2.0f;
+    public static final float ANGLE_STRAIGHT_DOWN = (3.0f * PI) / 2.0f;
     
     /*
      * Converts given degree angle to radians.

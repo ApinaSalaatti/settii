@@ -16,6 +16,7 @@ import settii.logic.listeners.*;
 import java.util.Random;
 
 import org.lwjgl.opengl.Display;
+import settii.utils.MathUtil;
 /**
  *
  * @author Merioksan Mikko
@@ -25,6 +26,8 @@ public class SettiLogic extends GameLogic {
     
     ArrayList<Long> playerWeapons;
     ArrayList<Long> selectedWeapons;
+    
+    ArrayList<Long> buildings;
     
     private long time;
     private int sinceLastSpawn;
@@ -37,6 +40,8 @@ public class SettiLogic extends GameLogic {
         playerWeapons = new ArrayList<Long>();
         selectedWeapons = new ArrayList<Long>();
         
+        buildings = new ArrayList<Long>();
+        
         time = 0;
         
         rng = new Random();
@@ -48,15 +53,16 @@ public class SettiLogic extends GameLogic {
         Application.get().getEventManager().register(MouseUpEvent.eventType, new MouseUpListener(this));
         Application.get().getEventManager().register(PointerMoveEvent.eventType, new PointerMoveListener(this));
         Application.get().getEventManager().register(ActorDestroyedEvent.eventType, new ActorDestroyedListener(this));
+        Application.get().getEventManager().register(FireWeaponEvent.eventType, new FireWeaponListener(this));
         
         // cool testing stuff
         long id2 = mainLogic.createActor("assets/data/actors/cannon.xml");
         GameActor act2 = mainLogic.getActor(id2);
         act2.move(Display.getWidth() / 2, Display.getHeight() - 50);
+        addPlayerWeapon(id2);
         
-        long id1 = mainLogic.createActor("assets/data/actors/enemy.xml");
-        GameActor act1 = mainLogic.getActor(id1);
-        act1.move(Display.getWidth() / 2, 50);
+        long playerID = mainLogic.createActor("assets/data/actors/player.xml");
+        Application.get().getHumanView().attachActor(playerID);
         
     }
     
@@ -76,10 +82,13 @@ public class SettiLogic extends GameLogic {
                 r = rng.nextInt(Display.getWidth() - 100) + 50;
                 long id = mainLogic.createActor("assets/data/actors/enemy.xml");
                 GameActor a = mainLogic.getActor(id);
-                a.move(r, 50);
+                PhysicsComponent pc = (PhysicsComponent)a.getComponent("PhysicsComponent");
+                pc.setLocation(r, 50);
+                pc.setAngleRad(MathUtil.ANGLE_STRAIGHT_DOWN);
                 sinceLastSpawn = 0;
             }
         }
+        
     }
     
     public ArrayList<Long> getPlayerWeapons() {
@@ -99,8 +108,12 @@ public class SettiLogic extends GameLogic {
     
     public boolean MouseDownListener(int mX, int mY, int button) {
         if(button == 0) {
+            long id = -1;
             if(Application.get().getLogic().getActorAtLoc(mX, mY) != null) {
-                long id = Application.get().getLogic().getActorAtLoc(mX, mY).getID();
+                id = Application.get().getLogic().getActorAtLoc(mX, mY).getID();
+            }
+            
+            if(playerWeapons.contains(id)) {
                 if(selectedWeapons.contains(id)) {
                     selectActor(id, false);
                 }
@@ -113,7 +126,6 @@ public class SettiLogic extends GameLogic {
                     GameActor actor = mainLogic.getActor(a);
                     WeaponsComponent wc = (WeaponsComponent)actor.getComponent("WeaponsComponent");
                     if(wc != null) {
-                        wc.fire();
                         Application.get().getEventManager().queueEvent(new FireWeaponEvent(a));
                     }
                 }
@@ -153,9 +165,26 @@ public class SettiLogic extends GameLogic {
         Application.get().getEventManager().queueEvent(new ActorSelectedEvent(id, select));
     }
     
+    public void addPlayerWeapon(long id) {
+        playerWeapons.add(id);
+    }
+    public void removePlayerWeapon(long id) {
+        playerWeapons.remove(id);
+    }
+    
     @Override
     public void actorDestroyedListener(long id) {
         selectedWeapons.remove(id);
         playerWeapons.remove(id);
+    }
+    
+    public void fireWeaponListener(long id) {
+        GameActor actor = mainLogic.getActor(id);
+        if(actor != null) {
+            WeaponsComponent wc = (WeaponsComponent)actor.getComponent("WeaponsComponent");
+            if(wc != null) {
+                wc.fire();
+            }
+        }
     }
 }

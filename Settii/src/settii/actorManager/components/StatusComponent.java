@@ -8,11 +8,14 @@ import org.w3c.dom.NodeList;
  * @author Merioksan Mikko
  */
 public class StatusComponent extends BaseComponent {
-    private String actorType;
-    private String allegiance;
+    public static final long NO_PARENT = -1;
+    
+    private String actorType; // what kind of actor are we, i.e. projectile, building, cannon, etc
+    private String allegiance; // whose side are we on
+    private long parent; // this actors parent-actor's id. -1 if no parent specified
     
     public StatusComponent() {
-        
+        parent = NO_PARENT;
     }
     @Override
     public String getName() {
@@ -31,6 +34,13 @@ public class StatusComponent extends BaseComponent {
     }
     public void setAllegiance(String a) {
         allegiance = a;
+    }
+    
+    public long getParent() {
+        return parent;
+    }
+    public void setParent(long id) {
+        parent = id;
     }
     
     @Override

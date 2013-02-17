@@ -63,6 +63,7 @@ public class PhysicsComponent extends BaseComponent {
         this.y = y;
         hitbox.x = (int)(x - width / 2);
         hitbox.y = (int)(y - height / 2);
+        Application.get().getEventManager().queueEvent(new ActorMovedEvent(owner.getID()));
     }
     
     public float getWidth() {
@@ -131,6 +132,15 @@ public class PhysicsComponent extends BaseComponent {
             targetAngle = angle;
         }
     }
+    public float getTargetX() {
+        return targetX;
+    }
+    public float getTargetY() {
+        return targetY;
+    }
+    public float getTargetAngle() {
+        return targetAngle;
+    }
     
     public Rectangle getHitbox() {
         return hitbox;
@@ -153,7 +163,6 @@ public class PhysicsComponent extends BaseComponent {
         
         if(oldX != newX || oldY != newY) {
             setLocation(newX, newY);
-            Application.get().getEventManager().queueEvent(new ActorMovedEvent(owner.getID()));
         }
         
         if(turnSpeed > 0) {

@@ -3,9 +3,15 @@
 		<width>35</width>
 		<height>36</height>
 		<health>12</health>
-		<Rendering><default>assets/graphics/actors/enemy.png</default></Rendering>
+		<Rendering><default>assets/graphics/actors/error.png</default></Rendering>
 	</PhysicsComponent>
-	<WeaponsComponent></WeaponsComponent>
+	<WeaponsComponent>
+		<rateOfFire>1000</rateOfFire>	
+	</WeaponsComponent>
+	<AIComponent></AIComponent>
+	<InventoryComponent>
+		<money>100</money>
+	</InventoryComponent>
 	<StatusComponent>
 		<ActorType>basic</ActorType>
 		<Allegiance>enemy</Allegiance>

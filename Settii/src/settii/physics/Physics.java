@@ -64,7 +64,11 @@ public class Physics {
         }
         PhysicsComponent projPC = (PhysicsComponent)proj.getComponent("PhysicsComponent");
         PhysicsComponent otherPC = (PhysicsComponent)other.getComponent("PhysicsComponent");
-
+        
+        if(projPC == null || otherPC == null) {
+            return false;
+        }
+        
         Rectangle projHb = projPC.getHitbox();
         Rectangle otherHb = otherPC.getHitbox();
 
@@ -83,6 +87,19 @@ public class Physics {
 
         // we got here, we got a HIT!
         otherPC.takeDamage(projPC.getDamage());
+        
+        // TODO: figure something better out here (or rather somewhere else...)
+        if(otherPC.getHealth() <= 0) {
+            InventoryComponent giver = (InventoryComponent)other.getComponent("InventoryComponent");
+            StatusComponent sc = (StatusComponent)proj.getComponent("StatusComponent");
+            
+            if(sc.getAlleciange().equals("friendly")) {
+                GameActor p = Application.get().getLogic().getActor(Application.get().getHumanView().getAttachedActor());
+                InventoryComponent getter = (InventoryComponent)p.getComponent("InventoryComponent");
+                getter.addMoney(giver.getMoney());
+            }
+        }
+        
         Application.get().getEventManager().queueEvent(new ActorDestroyedEvent(proj.getID())); // destroy the projectile
         return true;
     }

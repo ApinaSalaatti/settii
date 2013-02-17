@@ -3,7 +3,7 @@
 		<width>50</width>
 		<height>50</height>
 		<health>100</health>
-		<Rendering><default>assets/graphics/actors/cannon.png</default><selected>assets/graphics/actors/cannonSelected.png</selected></Rendering>
+		<Rendering><default>assets/graphics/actors/error.png</default><selected>assets/graphics/actors/error.png</selected></Rendering>
 	</PhysicsComponent>
 	<WeaponsComponent></WeaponsComponent>
 	<StatusComponent>

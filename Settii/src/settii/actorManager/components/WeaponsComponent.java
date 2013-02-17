@@ -1,8 +1,8 @@
 package settii.actorManager.components;
 
 import org.w3c.dom.NodeList;
+import org.w3c.dom.Node;
 import settii.actorManager.BaseComponent;
-import settii.actorManager.components.PhysicsComponent;
 import settii.Application;
 import settii.actorManager.GameActor;
 /**
@@ -31,14 +31,23 @@ public class WeaponsComponent extends BaseComponent {
     
     @Override
     public void createFromXML(NodeList attributes) {
-        
+        for(int i = 0; i < attributes.getLength(); i++) {
+            Node node = attributes.item(i);
+            
+            if(node.getNodeType() == Node.ELEMENT_NODE) {
+                Node value = node.getFirstChild();
+                if(node.getNodeName().equalsIgnoreCase("rateOfFire")) {
+                    rateOfFire = Integer.parseInt(value.getNodeValue());
+                }
+            }
+        }
     }
     
     public void setReady(boolean r) {
         readyToFire = r;
     }
     
-    public void fire() {
+    public boolean fire() {
         if(readyToFire && timeSinceLastShot >= rateOfFire) {
             PhysicsComponent pc1 = (PhysicsComponent)owner.getComponent("PhysicsComponent");
             StatusComponent sc1 = (StatusComponent)owner.getComponent("StatusComponent");
@@ -46,7 +55,6 @@ public class WeaponsComponent extends BaseComponent {
             long id = Application.get().getLogic().createActor(bullet);
             GameActor bul = Application.get().getLogic().getActor(id);
             
-
             float weaponDist = pc1.getHeight() / 2 + 10; // barrel of the gun is in front of the weapon
             
             // calculate correct spot with angle of the actor
@@ -60,10 +68,14 @@ public class WeaponsComponent extends BaseComponent {
             // the projectile must know who shot it to prevent friendly fire
             sc2.setAllegiance(sc1.getAlleciange());
             
+            pc2.setDamage(damage);
             pc2.setAngleRad(pc1.getAngleRad());
             pc2.applyAcceleration(1.0f);
             timeSinceLastShot = 0;
+            return true;
         }
+        
+        return false;
     }
     
     @Override
