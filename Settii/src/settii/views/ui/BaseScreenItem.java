@@ -94,7 +94,7 @@ public class BaseScreenItem implements IScreenItem {
     }
     
     @Override
-    public boolean onPointerMove(int mDX, int mDY) {
+    public boolean onPointerMove(int mX, int mY, int mDX, int mDY) {
         return false;
     }
 }

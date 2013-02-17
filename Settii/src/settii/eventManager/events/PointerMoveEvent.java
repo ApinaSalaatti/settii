@@ -12,8 +12,11 @@ public class PointerMoveEvent implements IGameEvent {
     public static long eventType = 12;
     
     private int mDX, mDY;
+    private int mX, mY;
     
-    public PointerMoveEvent(int dx, int dy) {
+    public PointerMoveEvent(int x, int y, int dx, int dy) {
+        mX = x;
+        mY = y;
         mDX = dx;
         mDY = dy;
     }
@@ -28,5 +31,11 @@ public class PointerMoveEvent implements IGameEvent {
     }
     public int getDY() {
         return mDY;
+    }
+    public int getX() {
+        return mX;
+    }
+    public int getY() {
+        return mY;
     }
 }

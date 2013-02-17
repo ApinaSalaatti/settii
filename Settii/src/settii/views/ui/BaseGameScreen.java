@@ -87,12 +87,12 @@ public class BaseGameScreen implements IGameScreen {
         return false;
     }
     @Override
-    public boolean onPointerMove(int mDX, int mDY) {
+    public boolean onPointerMove(int mX, int mY, int mDX, int mDY) {
         Iterator<IScreenItem> it = screenItems.iterator();
         
         while(it.hasNext()) {
             IScreenItem item = it.next();
-            if(item.onPointerMove(mDX, mDY)) {
+            if(item.onPointerMove(mX, mY, mDX, mDY)) {
                 return true;
             }
         }

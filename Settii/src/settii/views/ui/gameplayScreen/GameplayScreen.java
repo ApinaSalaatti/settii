@@ -38,7 +38,7 @@ public class GameplayScreen extends BaseGameScreen {
     }
     
     @Override
-    public boolean onPointerMove(int mDX, int mDY) {
+    public boolean onPointerMove(int mX, int mY, int mDX, int mDY) {
         return true;
     }
 }

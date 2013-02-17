@@ -60,12 +60,18 @@ public class Renderer {
     public SpriteBatch getSpriteBatch() {
         return batch;
     }
-    
+ 
     public void draw(RenderObject ro) {
+        // offset objects according to the set camera offset
         float x = ro.getX() + offsetX;
         float y = ro.getY() + offsetY;
+        
+        // draw sprites so that the location of the actor is in the center of the sprite
+        x = x - ro.getTexture().getWidth() / 2;
+        y = y - ro.getTexture().getHeight() / 2;
+        
         //System.out.println("Actor: " + ro.getActor() + ", x: " + ro.getX() + ", y: " + ro.getY());
-        batch.draw(ro.getTexture(), x, y, ro.getWidth(), ro.getHeight(), 0, 0, ro.getRotation(), ro.getTexture().getU(), ro.getTexture().getV(), ro.getTexture().getU2(), ro.getTexture().getV2());
+        batch.draw(ro.getTexture(), x, y, ro.getWidth(), ro.getHeight(), ro.getTexture().getWidth() / 2, ro.getTexture().getHeight() / 2, MathUtil.toRenderAngle(ro.getRotation()), ro.getTexture().getU(), ro.getTexture().getV(), ro.getTexture().getU2(), ro.getTexture().getV2());
     }
     
     public void draw(RenderObject ro, float width, float height) {

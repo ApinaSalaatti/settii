@@ -21,6 +21,6 @@ public class PointerMoveListener implements IGameEventListener {
     @Override
     public void execute(IGameEvent event) {
         PointerMoveEvent pme = (PointerMoveEvent)event;
-        sl.PointerMoveListener(pme.getDX(), pme.getDY());
+        sl.PointerMoveListener(pme.getX(), pme.getY(), pme.getDX(), pme.getDY());
     }
 }

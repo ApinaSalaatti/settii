@@ -10,5 +10,5 @@ public interface IGameView {
     public boolean onKeyUp(int key);
     public boolean onMouseDown(int mX, int mY, int button);
     public boolean onMouseUp(int mX, int mY, int button);
-    public boolean onPointerMove(int mDX, int mDY);
+    public boolean onPointerMove(int mX, int mY, int mDX, int mDY);
 }

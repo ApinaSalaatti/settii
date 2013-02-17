@@ -96,12 +96,16 @@ public class Camera {
         return false;
     }
     
-    public boolean onPointerMove(int mDX, int mDY) {
+    public boolean onPointerMove(int mX, int mY, int mDX, int mDY) {
+        /*
+         * Camera movement.
+         * TODO: maybe add something like this?
         if(screenClicked) {
             cameraX -= mDX;
             cameraY -= mDY;
             return true;
         }
+        */
         return false;
     }
 }

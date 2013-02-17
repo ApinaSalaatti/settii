@@ -14,12 +14,18 @@ import settii.eventManager.events.ActorCreatedEvent;
  */
 public class ActorFactory {
     private long lastID;
+    private ActorManager manager;
     
     public ActorFactory() {
         lastID = 0;
+        manager = new ActorManager();
     }
     
     public boolean init() {
+        if(!manager.init()) {
+            System.out.println("ActorFactory initialization failed!");
+            return false;
+        }
         return true;
     }
     

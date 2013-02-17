@@ -1,5 +1,6 @@
 package settii.actorManager;
 
+import settii.actorManager.GameActor;
 import org.w3c.dom.NodeList;
 
 /**
@@ -8,7 +9,7 @@ import org.w3c.dom.NodeList;
  * @author Merioksan Mikko
  */
 public class BaseComponent {
-    protected long owner;
+    protected GameActor owner;
     
     /**
      * EVERY component should override this!
@@ -19,14 +20,23 @@ public class BaseComponent {
         return "BaseComponent";
     }
     
-    public void setOwner(long id) {
-        owner = id;
+    public void setOwner(GameActor actor) {
+        owner = actor;
     }
-    public long getOwner() {
+    public GameActor getOwner() {
         return owner;
     }
     
     public void createFromXML(NodeList attributes) {
         System.out.println("ERROR! Cannot create a base component.");
+    }
+    
+    /**
+     * Override this in extending components if needed.
+     * 
+     * @param deltaMs elapsed time since last update
+     */
+    public void update(long deltaMs) {
+        
     }
 }

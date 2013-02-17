@@ -105,8 +105,8 @@ public class HumanView implements IGameView {
         // mouse input
         while(Mouse.next()) {
             int button = Mouse.getEventButton();
-            int mX = Mouse.getX();
-            int mY = Display.getHeight() - Mouse.getY(); // invert the y-axis to match all our coordinates
+            int mX = Mouse.getEventX();
+            int mY = Display.getHeight() - Mouse.getEventY(); // invert the y-axis to match all our coordinates
             if(button != -1) { // check that a state of a mouse button has changed
                 if(Mouse.getEventButtonState()) {
                     onMouseDown(mX, mY, button);
@@ -117,11 +117,13 @@ public class HumanView implements IGameView {
             }
         }
         
+        int mX = Mouse.getX();
+        int mY = Display.getHeight() - Mouse.getY(); // invert the y-axis to match all our coordinates
         int mDX = Mouse.getDX();
         int mDY = -Mouse.getDY(); // invert y-axis yet again
         
         if(mDX != 0 || mDY != 0) {
-            onPointerMove(mDX, mDY);
+            onPointerMove(mX, mY, mDX, mDY);
         }
         
         return false;
@@ -202,13 +204,13 @@ public class HumanView implements IGameView {
             }
         }
         
-        // to change mouse coordinates to "world" coordinates, we must take camera location into accord
-        mX = (int)(mX + camera.getX());
-        mY = (int)(mY + camera.getY());
-        
         if(camera.onMouseUp(mX, mY, button)) {
             return true;
         }
+        
+        // to change mouse coordinates to "world" coordinates, we must take camera location into accord
+        mX = (int)(mX + camera.getX());
+        mY = (int)(mY + camera.getY());
         
         Application.get().getEventManager().queueEvent(new MouseUpEvent(mX, mY, button));
         
@@ -216,21 +218,25 @@ public class HumanView implements IGameView {
     }
     
     @Override
-    public boolean onPointerMove(int mDX, int mDY) {
+    public boolean onPointerMove(int mX, int mY, int mDX, int mDY) {
         Iterator<IGameScreen> it = screens.iterator();
         
         while(it.hasNext()) {
             IGameScreen screen = it.next();
-            if(screen.onPointerMove(mDX, mDY)) {
+            if(screen.onPointerMove(mX, mY, mDX, mDY)) {
                 return true;
             }
         }
         
-        if(camera.onPointerMove(mDX, mDY)) {
+        if(camera.onPointerMove(mX, mY, mDX, mDY)) {
             return true;
         }
         
-        Application.get().getEventManager().queueEvent(new PointerMoveEvent(mDX, mDY));
+        // to change mouse coordinates to "world" coordinates, we must take camera location into accord
+        mX = (int)(mX + camera.getX());
+        mY = (int)(mY + camera.getY());
+        
+        Application.get().getEventManager().queueEvent(new PointerMoveEvent(mX, mY, mDX, mDY));
         
         return false;
     }

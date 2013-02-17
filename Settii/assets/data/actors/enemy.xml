@@ -1,0 +1,13 @@
+<Actor>
+	<PhysicsComponent>
+		<width>35</width>
+		<height>36</height>
+		<health>12</health>
+		<Rendering><default>assets/graphics/actors/enemy.png</default></Rendering>
+	</PhysicsComponent>
+	<WeaponsComponent></WeaponsComponent>
+	<StatusComponent>
+		<ActorType>basic</ActorType>
+		<Allegiance>enemy</Allegiance>
+	</StatusComponent>
+</Actor>

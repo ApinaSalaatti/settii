@@ -7,7 +7,8 @@ import org.lwjgl.util.vector.Matrix4f;
  * @author Merioksan Mikko
  */
 public class MathUtil {
-    public static float PI = 3.141592653589793f;
+    public static final float PI = 3.141592653589793f;
+    public static final float ANGLE_STRAIGHT_UP = (PI / 2.0f);
     
     /*
      * Converts given degree angle to radians.
@@ -15,7 +16,7 @@ public class MathUtil {
      * @param rad
      * @return
      */
-    public float degToRad(float deg) {
+    public static float degToRad(float deg) {
         return deg * (PI / 180.0f);
     }
     /**
@@ -24,9 +25,14 @@ public class MathUtil {
      * @param rad
      * @return 
      */
-    public float radToDeg(float rad) {
+    public static float radToDeg(float rad) {
         return rad * (180.0f / PI);
     }
+    
+    public static float toRenderAngle(float angle) {
+        return angle - PI / 2.0f;
+    }
+    
     /**
     * Sets the given matrix to an orthographic 2D projection matrix, and returns it. If the given matrix
     * is null, a new one will be created and returned.

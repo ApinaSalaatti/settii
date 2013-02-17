@@ -1,5 +1,6 @@
 package settii.actorManager;
 
+import java.awt.Rectangle;
 import java.lang.reflect.Constructor;
 import settii.actorManager.components.*;
 import settii.Application;
@@ -40,12 +41,19 @@ public class GameActor {
         }
     }
     
+    public void update(long deltaMs) {
+        for(BaseComponent b : components.values()) {
+            b.update(deltaMs);
+        }
+    }
+    
     public boolean locationWithinActor(double x, double y) {
         PhysicsComponent pc = (PhysicsComponent)getComponent("PhysicsComponent");
         HitboxComponent hc = (HitboxComponent)getComponent("HitboxComponent");
         
         if(pc != null) {
-            if(x > pc.getX() && x < pc.getX() + pc.getWidth() && y > pc.getY() && y < pc.getY() + pc.getHeight()) {
+            Rectangle hb = pc.getHitbox();
+            if(x > hb.getX() && x < hb.getX() + hb.getWidth() && y > hb.getY() && y < hb.getY() + hb.getHeight()) {
                 return true;
             }
         }
@@ -71,7 +79,7 @@ public class GameActor {
                     Class c = Class.forName("settii.actorManager.components." + node.getNodeName());
                     Constructor constr = c.getConstructor();
                     BaseComponent bc = (BaseComponent)constr.newInstance();
-                    bc.setOwner(getID());
+                    bc.setOwner(this);
                     if(node.getChildNodes() != null && node.getChildNodes().getLength() > 0)  {
                         bc.createFromXML(node.getChildNodes());
                     }

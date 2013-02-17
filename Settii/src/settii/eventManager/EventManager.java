@@ -10,6 +10,8 @@ import java.util.HashMap;
  * @author Merioksan Mikko
  */
 public class EventManager {
+    private static long lastEventType = 15; // LOL just for me to remember it :---------)
+    
     private static EventManager instance = new EventManager();
     private HashMap<Long, ArrayList<IGameEventListener>> eventListeners;
     private ArrayList<ArrayDeque<IGameEvent>> eventQueues;

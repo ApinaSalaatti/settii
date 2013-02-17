@@ -1,8 +1,14 @@
 <Actor>
 	<PhysicsComponent>
-		<width>20</width>
-		<height>20</height>
-		<Rendering><default>assets/graphics/actors/bullet.png</default><selected>assets/graphics/actors/bullet.png</selected></Rendering>
+		<width>12</width>
+		<height>17</height>
+		<health>1</health>
+		<damage>11</damage>
+		<lifetime>5000</lifetime>
+		<turnspeed>0.0</turnspeed>
+		<Rendering><default>assets/graphics/actors/bullet.png</default></Rendering>
 	</PhysicsComponent>
-	<WeaponsComponent></WeaponsComponent>
+	<StatusComponent>
+		<ActorType>projectile</ActorType>
+	</StatusComponent>
 </Actor>

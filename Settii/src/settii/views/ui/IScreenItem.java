@@ -16,7 +16,7 @@ public interface IScreenItem {
     public boolean onMouseUp(int mX, int mY, int button);
     public boolean onKeyDown(int key);
     public boolean onKeyUp(int key);
-    public boolean onPointerMove(int mDX, int mDY);
+    public boolean onPointerMove(int mX, int mY, int mDX, int mDY);
     public double getX();
     public double getY();
     public double getWidth();

@@ -4,6 +4,7 @@ import settii.utils.Vector2D;
 import settii.views.humanView.renderer.Texture;
 import java.util.HashMap;
 import settii.Application;
+import settii.utils.MathUtil;
 /**
  *
  * @author Merioksan Mikko
@@ -18,15 +19,15 @@ public class RenderObject {
     private String filename;
     private Texture tex;
     
-    private Vector2D heading;
+    private float angleRad;
     
-    public RenderObject(long a, float x, float y, Vector2D heading, HashMap<String, String> files) {
+    public RenderObject(long a, float x, float y, float angle, HashMap<String, String> files) {
         actor = a;
         this.x = x;
         this.y = y;
         
         this.files = files;
-        this.heading = heading;
+        this.angleRad = angle;
         
         try {
             tex = Application.get().getResourceManager().getTextureManager().getTexture(files.get("default"));
@@ -39,7 +40,7 @@ public class RenderObject {
     }
     
     public RenderObject(long a, float x, float y, HashMap<String, String> files) {
-        this(a, x, y, new Vector2D(0f, 1f), files);
+        this(a, x, y, MathUtil.ANGLE_STRAIGHT_UP, files);
     }
     
     public float getX() {
@@ -63,7 +64,14 @@ public class RenderObject {
     public void setFile(String file) {
         filename = file;
         try {
-            tex = Application.get().getResourceManager().getTextureManager().getTexture(files.get(file));
+            if(files.containsKey(file)) {
+                tex = Application.get().getResourceManager().getTextureManager().getTexture(files.get(file));
+            }
+            else {
+                tex = Application.get().getResourceManager().getTextureManager().getTexture(files.get("default"));
+            }
+            width = tex.getWidth();
+            height = tex.getHeight();
         } catch(Exception e) {
             System.out.println("RenderObject file update failed!");
         }
@@ -83,6 +91,9 @@ public class RenderObject {
     }
     
     public float getRotation() {
-        return heading.getAngleRad();
+        return angleRad;
+    }
+    public void setRotation(float rot) {
+        angleRad = rot;
     }
 }
