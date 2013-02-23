@@ -13,9 +13,13 @@ import settii.actorManager.BaseComponent;
  */
 public class InventoryComponent extends BaseComponent {
     private int money;
+    private int crap;
+    private int cum;
     
     public InventoryComponent() {
         money = 0;
+        crap = 0;
+        cum = 0;
     }
     
     @Override
@@ -26,8 +30,40 @@ public class InventoryComponent extends BaseComponent {
     public int getMoney() {
         return money;
     }
+    public void setMoney(int m) {
+        money = m;
+    }
     public void addMoney(int amount) {
         money += amount;
+    }
+    public void removeMoney(int amount) {
+        money -= amount;
+    }
+    
+    public int getCrap() {
+        return crap;
+    }
+    public void setCrap(int c) {
+        crap = c;
+    }
+    public void addCrap(int amount) {
+        crap += amount;
+    }
+    public void removeCrap(int amount) {
+        crap -= amount;
+    }
+    
+    public int getCum() {
+        return cum;
+    }
+    public void setCum(int c) {
+        cum = c;
+    }
+    public void addCum(int amount) {
+        cum += amount;
+    }
+    public void removeCum(int amount) {
+        cum -= amount;
     }
     
     @Override
@@ -44,7 +80,21 @@ public class InventoryComponent extends BaseComponent {
                 if(node.getNodeName().equalsIgnoreCase("money")) {
                     money = Integer.parseInt(value.getNodeValue());
                 }
+                if(node.getNodeName().equalsIgnoreCase("crap")) {
+                    crap = Integer.parseInt(value.getNodeValue());
+                }
+                if(node.getNodeName().equalsIgnoreCase("cum")) {
+                    cum = Integer.parseInt(value.getNodeValue());
+                }
             }
         }
+    }
+    
+    @Override
+    public void copyTo(BaseComponent bc) {
+        InventoryComponent ic = (InventoryComponent)bc;
+        ic.setMoney(money);
+        ic.setCrap(crap);
+        ic.setCum(cum);
     }
 }

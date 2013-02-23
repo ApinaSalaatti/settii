@@ -14,9 +14,12 @@ public class Renderer {
     
     private SpriteBatch batch;
     
+    private BitmapFont font;
+    
     public Renderer() {
         try {
             batch = new SpriteBatch();
+            font = new BitmapFont("assets/graphics/ui/font/characters.png");
         } catch(Exception e) {
             System.out.println("Renderer creation failed!");
             e.printStackTrace();
@@ -76,5 +79,24 @@ public class Renderer {
     
     public void draw(RenderObject ro, float width, float height) {
         batch.draw(ro.getTexture(), ro.getX(), ro.getY(), width, height);
+    }
+    
+    public void draw(Texture tex, float x, float y) {
+        batch.draw(tex, x, y);
+    }
+    
+    public void draw(Texture tex, float x, float y, float u, float v, float u2, float v2) {
+        batch.draw(tex, x, y, tex.getWidth() * u2, tex.getHeight(), tex.getWidth() / 2, tex.getHeight() / 2, MathUtil.toRenderAngle(MathUtil.ANGLE_STRAIGHT_UP), u, v, u2, v2);
+    }
+    
+    public void draw(Texture tex, float[] vertices, int offset) {
+        batch.draw(tex, vertices, offset);
+    }
+    
+    public void drawText(String text, float x, float y) {
+        drawText(text, x, y, 1.0f);
+    }
+    public void drawText(String text, float x, float y, float scale) {
+        font.renderText(text, x, y, scale);
     }
 }

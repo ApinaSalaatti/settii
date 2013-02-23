@@ -10,12 +10,18 @@ import org.w3c.dom.NodeList;
 public class StatusComponent extends BaseComponent {
     public static final long NO_PARENT = -1;
     
+    public static final String ALLEGIANCE_ENEMY = "enemy";
+    public static final String ALLEGIANCE_FRIENDLY = "friendly";
+    
     private String actorType; // what kind of actor are we, i.e. projectile, building, cannon, etc
     private String allegiance; // whose side are we on
     private long parent; // this actors parent-actor's id. -1 if no parent specified
     
+    private int expValue;
+    
     public StatusComponent() {
         parent = NO_PARENT;
+        expValue = 0;
     }
     @Override
     public String getName() {
@@ -29,7 +35,7 @@ public class StatusComponent extends BaseComponent {
         actorType = type;
     }
     
-    public String getAlleciange() {
+    public String getAllegiance() {
         return allegiance;
     }
     public void setAllegiance(String a) {
@@ -41,6 +47,13 @@ public class StatusComponent extends BaseComponent {
     }
     public void setParent(long id) {
         parent = id;
+    }
+    
+    public int getExpValue() {
+        return expValue;
+    }
+    public void setExpValue(int v) {
+        expValue = v;
     }
     
     @Override
@@ -56,7 +69,19 @@ public class StatusComponent extends BaseComponent {
                 else if(node.getNodeName().equalsIgnoreCase("Allegiance")) {
                     allegiance = value.getNodeValue();
                 }
+                else if(node.getNodeName().equalsIgnoreCase("ExpValue")) {
+                    expValue = Integer.parseInt(value.getNodeValue());
+                }
             }
         }
+    }
+    
+    @Override
+    public void copyTo(BaseComponent bc) {
+        StatusComponent sc = (StatusComponent)bc;
+        sc.setAllegiance(allegiance);
+        sc.setExpValue(expValue);
+        sc.setParent(parent);
+        sc.setType(actorType);
     }
 }

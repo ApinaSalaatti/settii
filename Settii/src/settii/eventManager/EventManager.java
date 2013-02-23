@@ -4,13 +4,14 @@ import settii.eventManager.events.IGameEvent;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.HashMap;
+import settii.eventManager.events.ActorDestroyedEvent;
 /**
  * Class that manages all sorts of game events!
  * 
  * @author Merioksan Mikko
  */
 public class EventManager {
-    private static long lastEventType = 15; // LOL just for me to remember it :---------)
+    private static long lastEventType = 20; // LOL just for me to remember it :---------)
     
     private static EventManager instance = new EventManager();
     private HashMap<Long, ArrayList<IGameEventListener>> eventListeners;

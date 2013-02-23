@@ -36,7 +36,7 @@ public class Physics {
                 StatusComponent sc2 = (StatusComponent)a2.getComponent("StatusComponent");
                 
                 // no friendly fire
-                if(!sc1.getAlleciange().equals(sc2.getAlleciange())) {
+                if(!sc1.getAllegiance().equals(sc2.getAllegiance())) {
                     GameActor proj = null;
                     GameActor other = null;
 
@@ -86,10 +86,11 @@ public class Physics {
         }
 
         // we got here, we got a HIT!
+        Application.get().getEventManager().queueEvent(new CollisionEvent(proj, other));
         otherPC.takeDamage(projPC.getDamage());
-        
+        /*
         // TODO: figure something better out here (or rather somewhere else...)
-        if(otherPC.getHealth() <= 0) {
+        if(otherPC.takeDamage(projPC.getDamage())) {
             InventoryComponent giver = (InventoryComponent)other.getComponent("InventoryComponent");
             StatusComponent sc = (StatusComponent)proj.getComponent("StatusComponent");
             
@@ -99,8 +100,9 @@ public class Physics {
                 getter.addMoney(giver.getMoney());
             }
         }
-        
-        Application.get().getEventManager().queueEvent(new ActorDestroyedEvent(proj.getID())); // destroy the projectile
+        * 
+        */
+        Application.get().getEventManager().queueEvent(new ActorDestroyedEvent(proj)); // destroy the projectile
         return true;
     }
     

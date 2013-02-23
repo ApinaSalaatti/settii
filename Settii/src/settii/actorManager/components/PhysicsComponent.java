@@ -36,6 +36,10 @@ public class PhysicsComponent extends BaseComponent {
     private long lived;
     
     public PhysicsComponent() {
+        // actors that have not been properly placed live in negativland
+        x = -1000;
+        y = -1000;
+        
         maxAcceleration = 0.1f;
         accelerationRate = 0.0f;
         maxSpeed = 1.0f;
@@ -83,12 +87,21 @@ public class PhysicsComponent extends BaseComponent {
     public void setHealth(int h) {
         health = h;
     }
-    public void takeDamage(int d) {
+    /**
+     * Take damage and return true if killed.
+     * 
+     * @param d amount of damage
+     * @return were we killed?
+     */
+    public boolean takeDamage(int d) {
         health -= d;
         
         if(health <= 0) {
-            Application.get().getEventManager().queueEvent(new ActorDestroyedEvent(owner.getID()));
+            Application.get().getEventManager().queueEvent(new ActorDestroyedEvent(owner));
+            return true;
         }
+        
+        return false;
     }
     
     public int getDamage() {
@@ -152,6 +165,9 @@ public class PhysicsComponent extends BaseComponent {
         if(speed > maxSpeed) {
             speed = maxSpeed;
         }
+        if(speed < 0) {
+            speed = 0;
+        }
         
         float speedX = -(float)(speed * Math.cos(angleRad));
         float speedY = -(float)(speed * Math.sin(angleRad));
@@ -171,7 +187,7 @@ public class PhysicsComponent extends BaseComponent {
         
         lived += deltaMs;
         if(lifetime != 0 && lived >= lifetime) {
-            Application.get().getEventManager().queueEvent(new ActorDestroyedEvent(owner.getID()));
+            Application.get().getEventManager().queueEvent(new ActorDestroyedEvent(owner));
         }
     }
     
@@ -247,5 +263,13 @@ public class PhysicsComponent extends BaseComponent {
         
         // set up hitbox to surround our location
         hitbox.setRect(x - width / 2, y - height / 2, width, height);
+    }
+    
+    @Override
+    public void copyTo(BaseComponent bc) {
+        PhysicsComponent pc = (PhysicsComponent)bc;
+        // for now only damage and health...
+        pc.setDamage(damage);
+        pc.setHealth(health);
     }
 }

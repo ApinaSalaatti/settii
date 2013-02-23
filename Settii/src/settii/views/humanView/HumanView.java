@@ -15,12 +15,20 @@ import org.lwjgl.opengl.Display;
 import settii.views.IGameView;
 import settii.views.humanView.renderer.Renderer;
 import settii.views.humanView.listeners.*;
+import settii.views.ui.gameplayScreen.*;
+import settii.views.ui.mainMenuScreen.*;
+import settii.views.humanView.renderer.BitmapFont;
+import settii.views.humanView.renderer.Texture;
 /**
  *
  * @author Merioksan Mikko
  */
 public class HumanView implements IGameView {
     private Camera camera;
+    
+    // cursor stuff
+    private Texture cursor;
+    private float mouseX, mouseY;
     
     private long attachedActor;
     
@@ -32,6 +40,8 @@ public class HumanView implements IGameView {
         screens = new ArrayDeque<IGameScreen>();
         
         camera = new Camera();
+        
+        screens.addFirst(GameplayScreenFactory.create());
     }
     
     public boolean init() {
@@ -39,16 +49,21 @@ public class HumanView implements IGameView {
             System.out.println("Error initializing the scene");
             return false;
         }
-       
+        
+        cursor = Application.get().getResourceManager().getTextureManager().getTexture("assets/graphics/ui/cursor.png");
+        mouseX = 0;
+        mouseY = Display.getHeight();
         return true;
     }
 
+    /*
     public long getAttachedActor() {
         return attachedActor;
     }
     public void attachActor(long actor) {
         attachedActor = actor;
     }
+    */
     
     @Override
     public void update(long deltaMs) {
@@ -69,7 +84,6 @@ public class HumanView implements IGameView {
         scene.render();
         Renderer.get().end();
         
-        
         // render user interface stuff
         // set offset uniform to zero for user interface rendering
         Renderer.get().setOffset(0, 0);
@@ -79,6 +93,10 @@ public class HumanView implements IGameView {
             IGameScreen screen = it.next();
             screen.render();
         }
+        
+        // render cursor last
+        Renderer.get().draw(cursor, mouseX-cursor.getWidth()/2, mouseY-cursor.getHeight()/2);
+        
         Renderer.get().end();
     }
     
@@ -119,6 +137,8 @@ public class HumanView implements IGameView {
         
         int mX = Mouse.getX();
         int mY = Display.getHeight() - Mouse.getY(); // invert the y-axis to match all our coordinates
+        mouseX = mX;
+        mouseY = mY;
         int mDX = Mouse.getDX();
         int mDY = -Mouse.getDY(); // invert y-axis yet again
         
@@ -219,6 +239,7 @@ public class HumanView implements IGameView {
     
     @Override
     public boolean onPointerMove(int mX, int mY, int mDX, int mDY) {
+        
         Iterator<IGameScreen> it = screens.iterator();
         
         while(it.hasNext()) {

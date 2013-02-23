@@ -1,6 +1,6 @@
 package settii.logic.listeners;
 
-import settii.logic.GameLogic;
+import settii.logic.IGameLogic;
 import settii.eventManager.IGameEventListener;
 import settii.eventManager.events.IGameEvent;
 import settii.eventManager.events.ActorDestroyedEvent;
@@ -9,9 +9,9 @@ import settii.eventManager.events.ActorDestroyedEvent;
  * @author Merioksan Mikko
  */
 public class ActorDestroyedListener implements IGameEventListener {
-    private GameLogic gl;
+    private IGameLogic gl;
     
-    public ActorDestroyedListener(GameLogic gl) {
+    public ActorDestroyedListener(IGameLogic gl) {
         this.gl = gl;
     }
     

@@ -1,0 +1,15 @@
+<Actor>
+	<PhysicsComponent>
+		<width>50</width>
+		<height>50</height>
+		<health>100</health>
+		<Rendering><default>assets/graphics/actors/bigCannon.png</default><selected>assets/graphics/actors/bigCannonSelected.png</selected></Rendering>
+	</PhysicsComponent>
+	<WeaponsComponent>
+		<damage>20</damage>
+	</WeaponsComponent>
+	<StatusComponent>
+		<ActorType>basic</ActorType>
+		<Allegiance>friendly</Allegiance>
+	</StatusComponent>
+</Actor>

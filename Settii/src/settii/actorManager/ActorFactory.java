@@ -30,7 +30,7 @@ public class ActorFactory {
     }
     
     public GameActor createActor(String resource) {
-        GameActor actor = new GameActor(getNextID());
+        GameActor actor = new GameActor(getNextID(), resource);
         
         NodeList attributes = Application.get().getResourceManager().getDataManager().getData(resource);
         

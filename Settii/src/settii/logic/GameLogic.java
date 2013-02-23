@@ -17,7 +17,13 @@ import settii.physics.Physics;
  *
  * @author Merioksan Mikko
  */
-public class GameLogic {
+public class GameLogic implements IGameLogic {
+    public enum GameState {
+        MAIN_MENU, PLAYING, QUITTING
+    }
+ 
+    public GameState currentState;
+    
     private ActorManager actorManager;
     private ActorFactory actorFactory;
     private HashMap<Long, GameActor> actors;
@@ -31,7 +37,10 @@ public class GameLogic {
         game = null;
         physics = null;
         
+        changeState(GameState.MAIN_MENU);
+        
         Application.get().getEventManager().register(ActorDestroyedEvent.eventType, new ActorDestroyedListener(this));
+        Application.get().getEventManager().register(GameStateChangeEvent.eventType, new GameStateChangeListener(this));
     }
     
     public boolean init() {
@@ -52,6 +61,19 @@ public class GameLogic {
         }
         
         return true;
+    }
+    
+    public void changeState(GameState newState) {
+        switch(newState) {
+            case MAIN_MENU:
+                clear();
+                break;
+            case PLAYING:
+                break;
+            case QUITTING:
+                Application.get().quit();
+                break;
+        }
     }
     
     public void loadGame(String resource) {
@@ -102,8 +124,20 @@ public class GameLogic {
     public Collection<GameActor> getActors() {
         return actors.values();
     }
+    public void clear() {
+        GameActor[] toClear = actors.values().toArray(new GameActor[actors.size()]);
+        
+        for(GameActor a : toClear) {
+            Application.get().getEventManager().queueEvent(new ActorDestroyedEvent(a));
+        }
+    }
     
-    public void actorDestroyedListener(long id) {
-        actors.remove(id);
+    @Override
+    public void actorDestroyedListener(GameActor actor) {
+        actors.remove(actor.getID());
+    }
+    
+    public void gameStateChangeListener(GameState state) {
+        changeState(state);
     }
 }

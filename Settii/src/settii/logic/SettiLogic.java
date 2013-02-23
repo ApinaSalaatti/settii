@@ -13,6 +13,8 @@ import settii.views.ui.IScreenItem;
 import settii.eventManager.events.*;
 import settii.eventManager.EventManager;
 import settii.logic.listeners.*;
+import settii.logic.mouse.*;
+import settii.logic.shop.*;
 import java.util.Random;
 
 import org.lwjgl.opengl.Display;
@@ -21,8 +23,10 @@ import settii.utils.MathUtil;
  *
  * @author Merioksan Mikko
  */
-public class SettiLogic extends GameLogic {
+public class SettiLogic implements IGameLogic {
     private GameLogic mainLogic;
+    
+    private IMouseAction currentMouseAction;
     
     ArrayList<Long> playerWeapons;
     ArrayList<Long> selectedWeapons;
@@ -32,10 +36,15 @@ public class SettiLogic extends GameLogic {
     private long time;
     private int sinceLastSpawn;
     
+    private Player player;
+    private Shop shop;
+    
     private Random rng;
     
     public SettiLogic(GameLogic logic) {
         mainLogic = logic;
+        
+        currentMouseAction = new DefaultAction();
         
         playerWeapons = new ArrayList<Long>();
         selectedWeapons = new ArrayList<Long>();
@@ -43,6 +52,9 @@ public class SettiLogic extends GameLogic {
         buildings = new ArrayList<Long>();
         
         time = 0;
+        
+        player = new Player();
+        shop = new Shop();
         
         rng = new Random();
         
@@ -58,19 +70,21 @@ public class SettiLogic extends GameLogic {
         // cool testing stuff
         long id2 = mainLogic.createActor("assets/data/actors/cannon.xml");
         GameActor act2 = mainLogic.getActor(id2);
-        act2.move(Display.getWidth() / 2, Display.getHeight() - 50);
+        act2.move(Display.getWidth() / 2, Display.getHeight() - 150);
         addPlayerWeapon(id2);
         
-        long playerID = mainLogic.createActor("assets/data/actors/player.xml");
-        Application.get().getHumanView().attachActor(playerID);
-        
+        for(int i = 0; i < 4; i++) {
+            long b = mainLogic.createActor("assets/data/actors/building.xml");
+            GameActor building = mainLogic.getActor(b);
+            building.move(i*200 + 150, Display.getHeight() - 128 / 2);
+            buildings.add(b);
+        }
     }
     
     public SettiLogic(String resource) {
         
     }
     
-    @Override
     public void update(long deltaMs) {
         time += deltaMs;
         
@@ -83,12 +97,15 @@ public class SettiLogic extends GameLogic {
                 long id = mainLogic.createActor("assets/data/actors/enemy.xml");
                 GameActor a = mainLogic.getActor(id);
                 PhysicsComponent pc = (PhysicsComponent)a.getComponent("PhysicsComponent");
-                pc.setLocation(r, 50);
+                pc.setLocation(r, -50);
                 pc.setAngleRad(MathUtil.ANGLE_STRAIGHT_DOWN);
                 sinceLastSpawn = 0;
             }
         }
         
+        player.update(deltaMs);
+        
+        currentMouseAction.update(deltaMs);
     }
     
     public ArrayList<Long> getPlayerWeapons() {
@@ -96,6 +113,20 @@ public class SettiLogic extends GameLogic {
     }
     public ArrayList<Long> getSelectedWeapons() {
         return selectedWeapons;
+    }
+    public ArrayList<Long> getBuildings() {
+        return buildings;
+    }
+    
+    public Player getPlayer() {
+        return player;
+    }
+    public Shop getShop() {
+        return shop;
+    }
+    
+    public IMouseAction getMouseAction() {
+        return currentMouseAction;
     }
     
     public boolean KeyDownListener(int key) {
@@ -107,37 +138,8 @@ public class SettiLogic extends GameLogic {
     }
     
     public boolean MouseDownListener(int mX, int mY, int button) {
-        if(button == 0) {
-            long id = -1;
-            if(Application.get().getLogic().getActorAtLoc(mX, mY) != null) {
-                id = Application.get().getLogic().getActorAtLoc(mX, mY).getID();
-            }
-            
-            if(playerWeapons.contains(id)) {
-                if(selectedWeapons.contains(id)) {
-                    selectActor(id, false);
-                }
-                else {
-                    selectActor(id, true);
-                }
-            }
-            else {
-                for(long a : selectedWeapons) {
-                    GameActor actor = mainLogic.getActor(a);
-                    WeaponsComponent wc = (WeaponsComponent)actor.getComponent("WeaponsComponent");
-                    if(wc != null) {
-                        Application.get().getEventManager().queueEvent(new FireWeaponEvent(a));
-                    }
-                }
-            }
-        }
-        else if(button == 1) {
-            Long[] deselected = selectedWeapons.toArray(new Long[selectedWeapons.size()]);
-            for(long a : deselected) {
-                selectActor(a, false);
-            }
-        }
-        return false;
+        currentMouseAction.execute(mX, mY, button);
+        return true;
     }
     
     public boolean MouseUpListener(int mX, int mY, int button) {
@@ -172,10 +174,25 @@ public class SettiLogic extends GameLogic {
         playerWeapons.remove(id);
     }
     
+    public void clearSelectedWeapons() {
+        Long[] selected = selectedWeapons.toArray(new Long[selectedWeapons.size()]);
+        for(long a : selected) {
+            selectActor(a, false);
+        }
+    }
+    
+    public void setCurrentMouseAction(IMouseAction a) {
+        currentMouseAction = a;
+    }
+    
     @Override
-    public void actorDestroyedListener(long id) {
-        selectedWeapons.remove(id);
-        playerWeapons.remove(id);
+    public void actorDestroyedListener(GameActor actor) {
+        player.actorDestroyedListener(actor);
+        
+        // just try to remove the actor from EVERYWHERE!
+        selectedWeapons.remove(actor.getID());
+        playerWeapons.remove(actor.getID());
+        buildings.remove(actor.getID());
     }
     
     public void fireWeaponListener(long id) {

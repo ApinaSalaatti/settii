@@ -18,7 +18,7 @@ public class WeaponsComponent extends BaseComponent {
     private boolean readyToFire;
     
     public WeaponsComponent() {
-        damage = 5;
+        damage = 5; // default dmg, I dunno!
         bullet = "assets/data/actors/bullet.xml";
         rateOfFire = 100;
         timeSinceLastShot = 1000;
@@ -39,8 +39,21 @@ public class WeaponsComponent extends BaseComponent {
                 if(node.getNodeName().equalsIgnoreCase("rateOfFire")) {
                     rateOfFire = Integer.parseInt(value.getNodeValue());
                 }
+                else if(node.getNodeName().equalsIgnoreCase("damage")) {
+                    damage = Integer.parseInt(value.getNodeValue());
+                }
+                if(node.getNodeName().equalsIgnoreCase("bullet")) {
+                    bullet = value.getNodeValue();
+                }
             }
         }
+    }
+    
+    public int getDamage() {
+        return damage;
+    }
+    public void setDamage(int d) {
+        damage = d;
     }
     
     public void setReady(boolean r) {
@@ -66,7 +79,7 @@ public class WeaponsComponent extends BaseComponent {
             StatusComponent sc2 = (StatusComponent)bul.getComponent("StatusComponent");
             
             // the projectile must know who shot it to prevent friendly fire
-            sc2.setAllegiance(sc1.getAlleciange());
+            sc2.setAllegiance(sc1.getAllegiance());
             
             pc2.setDamage(damage);
             pc2.setAngleRad(pc1.getAngleRad());
@@ -81,5 +94,12 @@ public class WeaponsComponent extends BaseComponent {
     @Override
     public void update(long deltaMs) {
         timeSinceLastShot += deltaMs;
+    }
+    
+    @Override
+    public void copyTo(BaseComponent bc) {
+        WeaponsComponent wc = (WeaponsComponent)bc;
+        wc.setDamage(damage);
+        wc.setOwner(owner);
     }
 }

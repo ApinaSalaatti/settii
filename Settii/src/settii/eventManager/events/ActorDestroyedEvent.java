@@ -1,16 +1,17 @@
 package settii.eventManager.events;
 
+import settii.actorManager.GameActor;
 /**
  *
  * @author Merioksan Mikko
  */
 public class ActorDestroyedEvent implements IGameEvent {
-    public static long eventType = 15;
+    public static long eventType = 17;
     
-    private long actor;
+    private GameActor actor;
     
-    public ActorDestroyedEvent(long id) {
-        actor = id;
+    public ActorDestroyedEvent(GameActor a) {
+        actor = a;
     }
     
     @Override
@@ -18,7 +19,7 @@ public class ActorDestroyedEvent implements IGameEvent {
         return eventType;
     }
     
-    public long getActor() {
+    public GameActor getActor() {
         return actor;
     }
 }

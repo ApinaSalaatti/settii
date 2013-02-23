@@ -3,7 +3,7 @@
 		<width>35</width>
 		<height>36</height>
 		<health>12</health>
-		<Rendering><default>assets/graphics/actors/error.png</default></Rendering>
+		<Rendering><default>assets/graphics/actors/enemy.png</default></Rendering>
 	</PhysicsComponent>
 	<WeaponsComponent>
 		<rateOfFire>1000</rateOfFire>	
@@ -15,5 +15,6 @@
 	<StatusComponent>
 		<ActorType>basic</ActorType>
 		<Allegiance>enemy</Allegiance>
+		<ExpValue>10</ExpValue>
 	</StatusComponent>
 </Actor>

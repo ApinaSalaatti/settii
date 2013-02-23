@@ -86,12 +86,15 @@ public class Application {
         lifetime = 0;
         
         try {
+            resManager = new ResourceManager();
+            
             // initiate the window
             Display.setDisplayMode(new DisplayMode(WINDOW_WIDTH, WINDOW_HEIGHT));
             Display.setTitle(WINDOW_TITLE);
             Display.setResizable(true); //whether our window is resizable
             Display.setVSyncEnabled(VSYNC); //whether hardware VSync is enabled
             Display.setFullscreen(FULLSCREEN); //whether fullscreen is enabled
+            Mouse.setGrabbed(true);
 
             //create and show our display
             Display.create();
@@ -109,8 +112,6 @@ public class Application {
             System.out.println("Error initializing event manager!");
             return false;
         }
-        
-        resManager = new ResourceManager();
         
         humanView = new HumanView();
         if(!humanView.init()) {
@@ -162,5 +163,9 @@ public class Application {
         }
         
         Display.destroy();
+    }
+    
+    public void quit() {
+        quitting = true;
     }
 }

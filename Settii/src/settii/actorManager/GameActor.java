@@ -16,9 +16,12 @@ public class GameActor {
     private long actorID;
     private HashMap<String, BaseComponent> components;
     
-    public GameActor(long id) {
+    private String resource; // the xml-file this actor was created from
+    
+    public GameActor(long id, String res) {
         actorID = id;
         components = new HashMap<String, BaseComponent>();
+        resource = res;
     }
     
     public long getID() {
@@ -30,6 +33,10 @@ public class GameActor {
     }
     public BaseComponent getComponent(String comp) {
         return components.get(comp);
+    }
+    
+    public String getResource() {
+        return resource;
     }
     
     public void move(float x, float y) {
@@ -90,5 +97,14 @@ public class GameActor {
         catch(Exception e) {
             e.printStackTrace();
         }
+        
+    }
+    
+    /**
+     * Copies this actors components to another actor
+     * @param a actor to copy components to
+     */
+    public void copyTo(GameActor a) {
+        
     }
 }

@@ -92,7 +92,7 @@ public class GameScene {
         }
     }
     
-    public void actorDestroyedListener(long id) {
-        renderableActors.remove(id);
+    public void actorDestroyedListener(GameActor actor) {
+        renderableActors.remove(actor.getID());
     }
 }

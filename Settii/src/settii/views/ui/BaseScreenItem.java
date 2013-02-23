@@ -1,16 +1,19 @@
 package settii.views.ui;
 
-import java.awt.Graphics2D;
-import java.awt.event.InputEvent;
-import java.awt.event.MouseEvent;
-import java.awt.event.KeyEvent;
+import settii.views.humanView.renderer.Texture;
+import settii.views.humanView.renderer.Renderer;
+import settii.Application;
 /**
  *
  * @author Merioksan Mikko
  */
 public class BaseScreenItem implements IScreenItem {
-    protected double x, y;
-    protected double width, height;
+    protected float x, y;
+    protected float xOffset, yOffset;
+    protected float width, height;
+    
+    private Texture sprite;
+    
     protected boolean beingDragged;
     protected boolean visible;
     protected boolean clicked, selected;
@@ -18,9 +21,15 @@ public class BaseScreenItem implements IScreenItem {
     public BaseScreenItem() {
         beingDragged = false;
         visible = true;
+        clicked = false;
         selected = false;
     }
-    public BaseScreenItem(double x, double y, double w, double h) {
+    public BaseScreenItem(float x, float y, float w, float h, String tex) {
+        if(tex != null) {
+            sprite = Application.get().getResourceManager().getTextureManager().getTexture(tex);
+            xOffset = sprite.getWidth() - w;
+            yOffset = sprite.getHeight() - h;
+        }
         this.x = x;
         this.y = y;
         width = w;
@@ -32,20 +41,24 @@ public class BaseScreenItem implements IScreenItem {
     }
     
     @Override
-    public double getX() {
+    public float getX() {
         return x;
     }
     @Override
-    public double getY() {
+    public float getY() {
         return y;
     }
     @Override
-    public double getWidth() {
+    public float getWidth() {
         return width;
     }
     @Override
-    public double getHeight() {
+    public float getHeight() {
         return height;
+    }
+    @Override
+    public Texture getSprite() {
+        return sprite;
     }
     
     @Override
@@ -70,6 +83,9 @@ public class BaseScreenItem implements IScreenItem {
     
     @Override
     public void render() {
+        if(sprite != null) {
+            Renderer.get().draw(sprite, x, y);
+        }
     }
     
     @Override

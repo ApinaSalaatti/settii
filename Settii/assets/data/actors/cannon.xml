@@ -3,9 +3,12 @@
 		<width>50</width>
 		<height>50</height>
 		<health>100</health>
-		<Rendering><default>assets/graphics/actors/error.png</default><selected>assets/graphics/actors/error.png</selected></Rendering>
+		<Rendering><default>assets/graphics/actors/cannon.png</default><selected>assets/graphics/actors/cannonSelected.png</selected></Rendering>
 	</PhysicsComponent>
-	<WeaponsComponent></WeaponsComponent>
+	<WeaponsComponent>
+		<damage>10</damage>
+		<bullet>assets/data/actors/bullet.xml</bullet>
+	</WeaponsComponent>
 	<StatusComponent>
 		<ActorType>basic</ActorType>
 		<Allegiance>friendly</Allegiance>
