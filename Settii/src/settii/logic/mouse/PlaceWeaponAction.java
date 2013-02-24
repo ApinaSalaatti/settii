@@ -23,8 +23,6 @@ public class PlaceWeaponAction implements IMouseAction {
     @Override
     public void execute(int mX, int mY, int button) {
         if(button == 0) {
-            InventoryComponent inv = Application.get().getLogic().getGame().getPlayer().getInventory();
-            inv.removeMoney(cost);
             Application.get().getLogic().getGame().addPlayerWeapon(actor.getID());
 
             PhysicsComponent pc = (PhysicsComponent)actor.getComponent("PhysicsComponent");
@@ -32,6 +30,8 @@ public class PlaceWeaponAction implements IMouseAction {
             Application.get().getLogic().getGame().setCurrentMouseAction(new DefaultAction());
         }
         else if(button == 1) {
+            InventoryComponent inv = Application.get().getLogic().getGame().getPlayer().getInventory();
+            inv.addMoney(cost);
             Application.get().getEventManager().queueEvent(new ActorDestroyedEvent(actor));
             Application.get().getLogic().getGame().setCurrentMouseAction(new DefaultAction());
         }

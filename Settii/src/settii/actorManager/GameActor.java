@@ -55,7 +55,7 @@ public class GameActor {
     
     public boolean locationWithinActor(double x, double y) {
         PhysicsComponent pc = (PhysicsComponent)getComponent("PhysicsComponent");
-        HitboxComponent hc = (HitboxComponent)getComponent("HitboxComponent");
+        //HitboxComponent hc = (HitboxComponent)getComponent("HitboxComponent");
         
         if(pc != null) {
             Rectangle hb = pc.getHitbox();
@@ -105,6 +105,11 @@ public class GameActor {
      * @param a actor to copy components to
      */
     public void copyTo(GameActor a) {
-        
+        for(BaseComponent bc : components.values()) {
+            BaseComponent bc2 = a.getComponent(bc.getName());
+            if(bc2 != null) {
+                bc.copyTo(bc2);
+            }
+        }
     }
 }

@@ -13,6 +13,7 @@ public class StatusComponent extends BaseComponent {
     public static final String ALLEGIANCE_ENEMY = "enemy";
     public static final String ALLEGIANCE_FRIENDLY = "friendly";
     
+    private String actorName;
     private String actorType; // what kind of actor are we, i.e. projectile, building, cannon, etc
     private String allegiance; // whose side are we on
     private long parent; // this actors parent-actor's id. -1 if no parent specified
@@ -56,6 +57,13 @@ public class StatusComponent extends BaseComponent {
         expValue = v;
     }
     
+    public String getActorName() {
+        return actorName;
+    }
+    public void setActorName(String n) {
+        actorName = n;
+    }
+    
     @Override
     public void createFromXML(NodeList attributes) {
         for(int i = 0; i < attributes.getLength(); i++) {
@@ -66,12 +74,16 @@ public class StatusComponent extends BaseComponent {
                 if(node.getNodeName().equalsIgnoreCase("ActorType")) {
                     actorType = value.getNodeValue();
                 }
+                else if(node.getNodeName().equalsIgnoreCase("ActorName")) {
+                    actorName = value.getNodeValue();
+                }
                 else if(node.getNodeName().equalsIgnoreCase("Allegiance")) {
                     allegiance = value.getNodeValue();
                 }
                 else if(node.getNodeName().equalsIgnoreCase("ExpValue")) {
                     expValue = Integer.parseInt(value.getNodeValue());
                 }
+                
             }
         }
     }
@@ -79,9 +91,7 @@ public class StatusComponent extends BaseComponent {
     @Override
     public void copyTo(BaseComponent bc) {
         StatusComponent sc = (StatusComponent)bc;
-        sc.setAllegiance(allegiance);
         sc.setExpValue(expValue);
-        sc.setParent(parent);
         sc.setType(actorType);
     }
 }

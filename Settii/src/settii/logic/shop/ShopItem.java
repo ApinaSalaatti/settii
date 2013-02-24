@@ -4,6 +4,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import settii.Application;
 import settii.views.humanView.renderer.Texture;
+import settii.eventManager.events.shopEvents.*;
 /**
  *
  * @author Merioksan Mikko
@@ -14,13 +15,17 @@ public class ShopItem {
     private int damage;
     private int health;
     
+    private ShopEvent event;
+    
     private int value;
     
-    public ShopItem(String res) {
-        resource = res;
-        getData(res);
+    public ShopItem(String sprite, int value, ShopEvent event) {
+        this.sprite = sprite;
+        this.value = value;
+        this.event = event;
+        //getData(res);
     }
-    
+    /*
     private void getData(String res) {
         NodeList components = Application.get().getResourceManager().getDataManager().getData(res);
         for(int i = 0; i < components.getLength(); i++) {
@@ -59,13 +64,9 @@ public class ShopItem {
             }
         }
     }
-    
+    * 
     public String getResource() {
         return resource;
-    }
-    
-    public String getSprite() {
-        return sprite;
     }
     
     public int getDamage() {
@@ -82,10 +83,20 @@ public class ShopItem {
         health = h;
     }
     
+    */
+    
+    public String getSprite() {
+        return sprite;
+    }
+    
     public int getValue() {
         return value;
     }
     public void setValue(int v){
         value = v;
+    }
+    
+    public void buy() {
+        Application.get().getEventManager().queueEvent(event);
     }
 }

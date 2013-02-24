@@ -77,7 +77,6 @@ public class WeaponsComponent extends BaseComponent {
             
             PhysicsComponent pc2 = (PhysicsComponent)bul.getComponent("PhysicsComponent");
             StatusComponent sc2 = (StatusComponent)bul.getComponent("StatusComponent");
-            
             // the projectile must know who shot it to prevent friendly fire
             sc2.setAllegiance(sc1.getAllegiance());
             
@@ -100,6 +99,5 @@ public class WeaponsComponent extends BaseComponent {
     public void copyTo(BaseComponent bc) {
         WeaponsComponent wc = (WeaponsComponent)bc;
         wc.setDamage(damage);
-        wc.setOwner(owner);
     }
 }

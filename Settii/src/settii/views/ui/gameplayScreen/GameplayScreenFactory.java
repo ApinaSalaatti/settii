@@ -20,6 +20,7 @@ public class GameplayScreenFactory {
         screen.addScreenItem(new ShopButton(10, 200, 104, 88));
         screen.addScreenItem(new StatusDisplay(0, 0, 40, Display.getWidth()));
         screen.addScreenItem(new GameStateChangeButton(10, 310, 60, 60, GameLogic.GameState.QUITTING, "assets/graphics/ui/quit.png"));
+        screen.addScreenItem(new SelectionDisplay(Display.getWidth() - 250, Display.getHeight() - 250));
         
         return screen;
     }

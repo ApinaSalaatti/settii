@@ -39,8 +39,6 @@ public class SettiLogic implements IGameLogic {
     private Player player;
     private Shop shop;
     
-    private Random rng;
-    
     public SettiLogic(GameLogic logic) {
         mainLogic = logic;
         
@@ -55,8 +53,6 @@ public class SettiLogic implements IGameLogic {
         
         player = new Player();
         shop = new Shop();
-        
-        rng = new Random();
         
         // register to listen input events
         Application.get().getEventManager().register(KeyDownEvent.eventType, new KeyDownListener(this));
@@ -91,9 +87,9 @@ public class SettiLogic implements IGameLogic {
         sinceLastSpawn += deltaMs;
         
         if(sinceLastSpawn > 5000) {
-            int r = rng.nextInt(6) + 1;
+            int r = Application.get().getRNG().nextInt(6) + 1;
             if(r > 3) {
-                r = rng.nextInt(Display.getWidth() - 100) + 50;
+                r = Application.get().getRNG().nextInt(Display.getWidth() - 100) + 50;
                 long id = mainLogic.createActor("assets/data/actors/enemy.xml");
                 GameActor a = mainLogic.getActor(id);
                 PhysicsComponent pc = (PhysicsComponent)a.getComponent("PhysicsComponent");

@@ -29,16 +29,8 @@ public class ShopItemButton extends BaseScreenItem {
     public boolean onMouseDown(int mX, int mY, int button) {
         if(mX > x && mX < x + width && mY > y && mY < y + height) {
             if(item != null) {
-                GameActor toBuy = Application.get().getLogic().getActor(Application.get().getLogic().createActor(item.getResource()));
-
-                WeaponsComponent wc = (WeaponsComponent)toBuy.getComponent("WeaponsComponent");
-                wc.setDamage(item.getDamage());
-                PhysicsComponent pc = (PhysicsComponent)toBuy.getComponent("PhysicsComponent");
-                pc.setHealth(item.getHealth());
-                
                 Application.get().getEventManager().queueEvent(new AttemptToBuyEvent(item));
                 
-                //Application.get().getLogic().getGame().setCurrentMouseAction(new PlaceWeaponAction(toBuy));
                 Application.get().getHumanView().popScreen();
             }
             return true;
@@ -55,7 +47,6 @@ public class ShopItemButton extends BaseScreenItem {
             Renderer.get().draw(tex, x, y);
             
             Renderer.get().drawText("Cost:" + item.getValue(), x, y+70, 0.5f);
-            Renderer.get().drawText("D:" + item.getDamage(), x, y+90, 0.5f);
         }
     }
 }

@@ -1,9 +1,6 @@
 package settii;
 
-import java.awt.Canvas;
-import java.awt.Dimension;
-import javax.swing.JFrame;
-import javax.swing.WindowConstants;
+import java.util.Random;
 import settii.logic.*;
 import settii.eventManager.*;
 import settii.input.*;
@@ -36,6 +33,8 @@ public class Application {
     
     public static long lifetime;
     
+    private Random rng;
+    
     private ResourceManager resManager;
     
     private GameLogic logic;
@@ -46,7 +45,7 @@ public class Application {
     private boolean quitting;
     
     public Application() {
-        
+        rng = new Random();
     }
     
     public static Application get() {
@@ -74,6 +73,10 @@ public class Application {
     
     public ResourceManager getResourceManager() {
         return resManager;
+    }
+    
+    public Random getRNG() {
+        return rng;
     }
     
     /**

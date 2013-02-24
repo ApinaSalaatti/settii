@@ -25,14 +25,12 @@ public class GameLogic implements IGameLogic {
     public GameState currentState;
     
     private ActorManager actorManager;
-    private ActorFactory actorFactory;
     private HashMap<Long, GameActor> actors;
     private SettiLogic game;
     private Physics physics;
     
     public GameLogic() {
         actorManager = new ActorManager();
-        actorFactory = new ActorFactory();
         actors = new HashMap<Long, GameActor>();
         game = null;
         physics = null;
@@ -45,10 +43,7 @@ public class GameLogic implements IGameLogic {
     
     public boolean init() {
         if(!actorManager.init()) {
-            return false;
-        }
-        
-        if(!actorFactory.init()) {
+            System.out.println("ActorManager init failed!");
             return false;
         }
         
@@ -84,6 +79,10 @@ public class GameLogic implements IGameLogic {
         return game;
     }
     
+    public ActorManager getActorManager() {
+        return actorManager;
+    }
+    
     public void update(long deltaMs) {
         for(GameActor a : actors.values()) {
             a.update(deltaMs);
@@ -99,7 +98,7 @@ public class GameLogic implements IGameLogic {
     }
     
     public long createActor(String resource) {
-        GameActor actor = actorFactory.createActor(resource);
+        GameActor actor = actorManager.createActor(resource);
         actors.put(actor.getID(), actor);
         return actor.getID();
     }

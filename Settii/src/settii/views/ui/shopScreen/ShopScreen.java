@@ -48,6 +48,6 @@ public class ShopScreen extends BaseGameScreen {
             }
         }
         
-        return false;
+        return true;
     }
 }

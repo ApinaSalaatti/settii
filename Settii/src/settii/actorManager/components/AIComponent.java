@@ -16,9 +16,12 @@ import org.w3c.dom.NodeList;
  * @author Merioksan Mikko
  */
 public class AIComponent extends BaseComponent {
+    private long target;
+    private int targetY;
     
     public AIComponent() {
-        
+        target = -1;
+        targetY = -1;
     }
     
     @Override
@@ -29,7 +32,10 @@ public class AIComponent extends BaseComponent {
     @Override
     public void update(long deltaMs) {
         PhysicsComponent ownPC = (PhysicsComponent)owner.getComponent("PhysicsComponent");
-        if(ownPC.getY() < 100) {
+        if(targetY < 0) {
+            targetY = Application.get().getRNG().nextInt(100) + 100;
+        }
+        if(ownPC.getY() < targetY) {
             moveDown();
         }
         else {
@@ -60,17 +66,29 @@ public class AIComponent extends BaseComponent {
     }
     
     public void targetAndShoot() {
-        long t = -1;
-        if(Application.get().getLogic().getGame().getBuildings().size() > 0) {
-            t = Application.get().getLogic().getGame().getBuildings().get(0);
+        if(Application.get().getLogic().getGame().getBuildings().contains(target)) {
+            target();
         }
-        else if(Application.get().getLogic().getGame().getPlayerWeapons().size() > 0) {
-            t = Application.get().getLogic().getGame().getPlayerWeapons().get(0);
+        else if(Application.get().getLogic().getGame().getPlayerWeapons().contains(target)) {
+            target();
         }
-        
-        GameActor target = Application.get().getLogic().getActor(t);
-        if(target != null) {
-            PhysicsComponent tPC = (PhysicsComponent)target.getComponent("PhysicsComponent");
+        else {
+            if(Application.get().getLogic().getGame().getBuildings().size() > 0) {
+                int t = Application.get().getRNG().nextInt(Application.get().getLogic().getGame().getBuildings().size());
+                target = Application.get().getLogic().getGame().getBuildings().get(t);
+            }
+            else if(Application.get().getLogic().getGame().getPlayerWeapons().size() > 0) {
+                int t = Application.get().getRNG().nextInt(Application.get().getLogic().getGame().getPlayerWeapons().size());
+                target = Application.get().getLogic().getGame().getPlayerWeapons().get(t);
+            }
+            target();
+        }
+    }
+    
+    public void target() {
+        GameActor t = Application.get().getLogic().getActor(target);
+        if(t != null) {
+            PhysicsComponent tPC = (PhysicsComponent)t.getComponent("PhysicsComponent");
             if(tPC != null) {
                 PhysicsComponent ownPC = (PhysicsComponent)owner.getComponent("PhysicsComponent");
                 if(ownPC != null) {

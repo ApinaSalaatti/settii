@@ -11,7 +11,8 @@ public class ShopScreenFactory {
         
         ss.addItemSlot(30, 400);
         ss.addItemSlot(120, 400);
-        // ss.addScreenItem(new BuyButton(30, 500));
+        ss.addItemSlot(210, 400);
+        ss.addItemSlot(300, 400);
         ss.addScreenItem(new CancelButton(30, 490));
         
         return ss;

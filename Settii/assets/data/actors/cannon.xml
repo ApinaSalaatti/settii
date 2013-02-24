@@ -10,6 +10,7 @@
 		<bullet>assets/data/actors/bullet.xml</bullet>
 	</WeaponsComponent>
 	<StatusComponent>
+		<ActorName>Cannon</ActorName>
 		<ActorType>basic</ActorType>
 		<Allegiance>friendly</Allegiance>
 	</StatusComponent>

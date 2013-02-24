@@ -2,7 +2,7 @@
 	<PhysicsComponent>
 		<width>55</width>
 		<height>110</height>
-		<health>1</health>
+		<health>200</health>
 		<Rendering><default>assets/graphics/actors/building.png</default><selected>assets/graphics/actors/building.png</selected></Rendering>
 	</PhysicsComponent>
 	<StatusComponent>

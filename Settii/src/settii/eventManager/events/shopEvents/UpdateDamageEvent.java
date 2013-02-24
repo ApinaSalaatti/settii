@@ -4,15 +4,15 @@ package settii.eventManager.events.shopEvents;
  *
  * @author Merioksan Mikko
  */
-public class BuyActorEvent extends ShopEvent {
-    public static long eventType = 20;
+public class UpdateDamageEvent extends ShopEvent {
+    public static long eventType = 21;
     
-    private String actorRes;
-    private int cost;
+    String actorRes;
+    int damageToAdd;
     
-    public BuyActorEvent(int cost, String resource) {
+    public UpdateDamageEvent(String resource, int damage) {
         actorRes = resource;
-        this.cost = cost;
+        damageToAdd = damage;
     }
     
     @Override
@@ -23,8 +23,7 @@ public class BuyActorEvent extends ShopEvent {
     public String getResource() {
         return actorRes;
     }
-    
-    public int getCost() {
-        return cost;
+    public int getDamageToAdd() {
+        return damageToAdd;
     }
 }

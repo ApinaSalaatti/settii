@@ -9,6 +9,7 @@
 		<damage>20</damage>
 	</WeaponsComponent>
 	<StatusComponent>
+		<ActorName>Big Cannon</ActorName>
 		<ActorType>basic</ActorType>
 		<Allegiance>friendly</Allegiance>
 	</StatusComponent>

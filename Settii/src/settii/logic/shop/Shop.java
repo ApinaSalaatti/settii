@@ -7,6 +7,7 @@ import settii.actorManager.GameActor;
 import settii.actorManager.BaseComponent;
 import settii.actorManager.components.*;
 import settii.eventManager.events.AttemptToBuyEvent;
+import settii.eventManager.events.shopEvents.*;
 import settii.logic.Player;
 import settii.logic.mouse.PlaceWeaponAction;
 /**
@@ -17,8 +18,13 @@ public class Shop {
     // items
     public static String CANNON = "assets/data/actors/cannon.xml";
     public static int CANNON_DEFAULT_VALUE = 100;
+    public static String CANNON_UPDATE = "cannon_update";
+    public static int CANNON_UPDATE_DEFAULT_VALUE = 1000;
+    
     public static String BIG_CANNON = "assets/data/actors/bigCannon.xml";
     public static int BIG_CANNON_DEFAULT_VALUE = 500;
+    public static String BIG_CANNON_UPDATE = "big_cannon_update";
+    public static int BIG_CANNON_UPDATE_DEFAULT_VALUE = 2000;
     
     private HashMap<String, ShopItem> availableItems;
     private HashMap<String, ShopItem> allItems;
@@ -29,17 +35,19 @@ public class Shop {
         createShop();
         
         Application.get().getEventManager().register(AttemptToBuyEvent.eventType, new AttemptToBuyListener(this));
+        Application.get().getEventManager().register(BuyActorEvent.eventType, new BuyActorListener(this));
     }
     
     private void createShop() {
-        allItems.put(CANNON, new ShopItem(CANNON));
-        allItems.get(CANNON).setValue(CANNON_DEFAULT_VALUE);
-        
-        allItems.put(BIG_CANNON, new ShopItem(BIG_CANNON));
-        allItems.get(BIG_CANNON).setValue(BIG_CANNON_DEFAULT_VALUE);
-        
+        allItems.put(CANNON_UPDATE, new ShopItem("assets/graphics/shop/cannonUpdate.png", CANNON_UPDATE_DEFAULT_VALUE, new UpdateDamageEvent("assets/data/actors/cannon.xml", 10)));
+        allItems.put(CANNON, new ShopItem("assets/graphics/shop/cannon.png", CANNON_DEFAULT_VALUE, new BuyActorEvent(CANNON_DEFAULT_VALUE, "assets/data/actors/cannon.xml")));
+        allItems.put(BIG_CANNON, new ShopItem("assets/graphics/shop/bigCannon.png", BIG_CANNON_DEFAULT_VALUE, new BuyActorEvent(BIG_CANNON_DEFAULT_VALUE, "assets/data/actors/bigCannon.xml")));
+        allItems.put(BIG_CANNON_UPDATE, new ShopItem("assets/graphics/shop/bigCannonUpdate.png", BIG_CANNON_UPDATE_DEFAULT_VALUE, new UpdateDamageEvent("assets/data/actors/bigCannon.xml", 20)));
+       
         makeAvailable(CANNON);
+        makeAvailable(CANNON_UPDATE);
         makeAvailable(BIG_CANNON);
+        makeAvailable(BIG_CANNON_UPDATE);
     }
     
     public void makeAvailable(String key) {
@@ -63,14 +71,15 @@ public class Shop {
         InventoryComponent inv = Application.get().getLogic().getGame().getPlayer().getInventory();
         
         if(inv.getMoney() >= item.getValue()) {
-            GameActor toBuy = Application.get().getLogic().getActor(Application.get().getLogic().createActor(item.getResource()));
-
-            WeaponsComponent wc = (WeaponsComponent)toBuy.getComponent("WeaponsComponent");
-            wc.setDamage(item.getDamage());
-            PhysicsComponent pc = (PhysicsComponent)toBuy.getComponent("PhysicsComponent");
-            pc.setHealth(item.getHealth());
-
-            Application.get().getLogic().getGame().setCurrentMouseAction(new PlaceWeaponAction(toBuy, item.getValue()));
+            inv.removeMoney(item.getValue());
+            item.buy();
         }
+    }
+    
+    // TODO: should this be here?!!
+    public void buyActorListener(String resource, int value) {
+        GameActor toBuy = Application.get().getLogic().getActor(Application.get().getLogic().createActor(resource));
+
+        Application.get().getLogic().getGame().setCurrentMouseAction(new PlaceWeaponAction(toBuy, value));
     }
 }
