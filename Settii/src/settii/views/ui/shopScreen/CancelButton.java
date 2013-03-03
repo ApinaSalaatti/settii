@@ -14,7 +14,7 @@ public class CancelButton extends BaseScreenItem {
     
     @Override
     public boolean onMouseDown(int mX, int mY, int button) {
-        if(mX > x && mX < x + width && mY > y && mY < y + height) {
+        if(button == 0 && mX > x && mX < x + width && mY > y && mY < y + height) {
             Application.get().getHumanView().popScreen();
             return true;
         }

@@ -14,7 +14,7 @@ public class Player {
     public Player() {
         inventory = new InventoryComponent();
         exp = 0;
-        inventory.addMoney(1000); // starting money, for now atleast...
+        inventory.addMoney(100000); // starting money, for now atleast...
     }
     
     public InventoryComponent getInventory() {

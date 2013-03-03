@@ -1,5 +1,6 @@
 package settii.actorManager;
 
+import settii.eventManager.events.researchEvents.UpdateDamageEvent;
 import settii.Application;
 import settii.actorManager.components.*;
 import settii.actorManager.listeners.*;
@@ -36,12 +37,15 @@ public class ActorManager {
     public GameActor getPrototype(String resource) {
         return actors.get(resource);
     }
+    public void createPrototype(String resource) {
+        GameActor actor = factory.createActor(resource);
+        actors.put(resource, actor);
+    }
     
     public GameActor createActor(String resource) {
         // if not yet created, create a new prototype
         if(!actors.containsKey(resource)) {
-            GameActor actor = factory.createActor(resource);
-            actors.put(resource, actor);
+            createPrototype(resource);
         }
         
         GameActor actor = actors.get(resource);
@@ -54,6 +58,11 @@ public class ActorManager {
     
     public void updateDamageListener(String resource, int damageToAdd) {
         GameActor actor = actors.get(resource);
+        if(actor == null) {
+            createPrototype(resource);
+            actor = actors.get(resource);
+        }
+        
         WeaponsComponent wc = (WeaponsComponent)actor.getComponent("WeaponsComponent");
         wc.setDamage(wc.getDamage() + damageToAdd);
     }

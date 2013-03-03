@@ -1,10 +1,10 @@
-package settii.eventManager.events.shopEvents;
+package settii.eventManager.events.researchEvents;
 
 /**
  *
  * @author Merioksan Mikko
  */
-public class UpdateDamageEvent extends ShopEvent {
+public class UpdateDamageEvent extends ResearchEvent {
     public static long eventType = 21;
     
     String actorRes;

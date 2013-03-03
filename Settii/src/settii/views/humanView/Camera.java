@@ -44,7 +44,13 @@ public class Camera {
         return cameraY;
     }
     
+    public void setLocation(float x, float y) {
+        cameraX = x;
+        cameraY = y;
+    }
+    
     public boolean onKeyDown(int key) {
+        /*
         if(key == Keyboard.KEY_LEFT) {
             cameraSpeedX = -1f;
             return true;
@@ -61,9 +67,12 @@ public class Camera {
             cameraSpeedY = 1f;
             return true;
         }
+        * 
+        */
         return false;
     }
     public boolean onKeyUp(int key) {
+        /*
         if(key == Keyboard.KEY_LEFT) {
             cameraSpeedX = 0.0f;
             return true;
@@ -80,6 +89,8 @@ public class Camera {
             cameraSpeedY = 0.0f;
             return true;
         }
+        * 
+        */
         return false;
     }
     

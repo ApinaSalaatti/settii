@@ -19,7 +19,7 @@ public class BaseGameScreen implements IGameScreen {
     
     @Override
     public void addScreenItem(IScreenItem item) {
-        screenItems.add(item);
+        screenItems.addFirst(item);
     }
     
     @Override
@@ -31,6 +31,16 @@ public class BaseGameScreen implements IGameScreen {
             if(item.isVisible()) {
                 item.render();
             }
+        }
+    }
+    
+    @Override
+    public void update(long deltaMs) {
+        Iterator<IScreenItem> it = screenItems.descendingIterator();
+        
+        while(it.hasNext()) {
+            IScreenItem item = it.next();
+            item.update(deltaMs);
         }
     }
     

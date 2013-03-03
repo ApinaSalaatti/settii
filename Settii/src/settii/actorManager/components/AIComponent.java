@@ -66,6 +66,7 @@ public class AIComponent extends BaseComponent {
     }
     
     public void targetAndShoot() {
+        target = Application.get().getLogic().getGame().getBaseID();
         if(Application.get().getLogic().getGame().getBuildings().contains(target)) {
             target();
         }
@@ -75,11 +76,11 @@ public class AIComponent extends BaseComponent {
         else {
             if(Application.get().getLogic().getGame().getBuildings().size() > 0) {
                 int t = Application.get().getRNG().nextInt(Application.get().getLogic().getGame().getBuildings().size());
-                target = Application.get().getLogic().getGame().getBuildings().get(t);
+                //target = Application.get().getLogic().getGame().getBuildings().get(t);
             }
             else if(Application.get().getLogic().getGame().getPlayerWeapons().size() > 0) {
                 int t = Application.get().getRNG().nextInt(Application.get().getLogic().getGame().getPlayerWeapons().size());
-                target = Application.get().getLogic().getGame().getPlayerWeapons().get(t);
+                //target = Application.get().getLogic().getGame().getPlayerWeapons().get(t);
             }
             target();
         }

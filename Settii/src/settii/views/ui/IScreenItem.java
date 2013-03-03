@@ -16,6 +16,8 @@ public interface IScreenItem {
     public boolean onKeyDown(int key);
     public boolean onKeyUp(int key);
     public boolean onPointerMove(int mX, int mY, int mDX, int mDY);
+    public void setTooltip(String t);
+    public void update(long deltaMs);
     public float getX();
     public float getY();
     public float getWidth();

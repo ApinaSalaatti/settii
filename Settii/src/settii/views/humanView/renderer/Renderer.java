@@ -52,6 +52,10 @@ public class Renderer {
         GL11.glClearColor(1f, 1f, 1f, 1f);
     }
     
+    public BitmapFont getFont() {
+        return font;
+    }
+    
     public void begin() {
         batch.begin();
     }
@@ -73,7 +77,6 @@ public class Renderer {
         x = x - ro.getTexture().getWidth() / 2;
         y = y - ro.getTexture().getHeight() / 2;
         
-        //System.out.println("Actor: " + ro.getActor() + ", x: " + ro.getX() + ", y: " + ro.getY());
         batch.draw(ro.getTexture(), x, y, ro.getWidth(), ro.getHeight(), ro.getTexture().getWidth() / 2, ro.getTexture().getHeight() / 2, MathUtil.toRenderAngle(ro.getRotation()), ro.getTexture().getU(), ro.getTexture().getV(), ro.getTexture().getU2(), ro.getTexture().getV2());
     }
     
@@ -83,6 +86,10 @@ public class Renderer {
     
     public void draw(Texture tex, float x, float y) {
         batch.draw(tex, x, y);
+    }
+    
+    public void draw(Texture tex, float x, float y, float w, float h) {
+        batch.draw(tex, x, y, w, h);
     }
     
     public void draw(Texture tex, float x, float y, float u, float v, float u2, float v2) {

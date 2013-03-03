@@ -21,7 +21,7 @@ public class PlaceWeaponAction implements IMouseAction {
     }
     
     @Override
-    public void execute(int mX, int mY, int button) {
+    public boolean onMouseDown(int mX, int mY, int button) {
         if(button == 0) {
             Application.get().getLogic().getGame().addPlayerWeapon(actor.getID());
 
@@ -35,19 +35,23 @@ public class PlaceWeaponAction implements IMouseAction {
             Application.get().getEventManager().queueEvent(new ActorDestroyedEvent(actor));
             Application.get().getLogic().getGame().setCurrentMouseAction(new DefaultAction());
         }
+        
+        return false;
+    }
+    
+    @Override
+    public boolean onMouseUp(int mX, int mY, int button) {
+        return false;
+    }
+    
+    @Override
+    public boolean onPointerMove(int mX, int mY, int mDX, int mDY) {
+        actor.move(mX, mY);
+        return false;
     }
     
     @Override
     public void update(long deltaMs) {
-        // TODO: I don't like this, should create own Mouse class to wrap all this crap somehow!
-        float x = Mouse.getX();
-        float y = Display.getHeight() - Mouse.getY();
-        
-        actor.move(x, y);
-    }
-    
-    @Override
-    public void render() {
         
     }
 }

@@ -9,7 +9,7 @@ import settii.eventManager.events.shopEvents.*;
  *
  * @author Merioksan Mikko
  */
-public class ShopItem {
+public class ShopItem implements Sellable {
     private String resource;
     private String sprite;
     private int damage;
@@ -89,6 +89,7 @@ public class ShopItem {
         return sprite;
     }
     
+    @Override
     public int getValue() {
         return value;
     }
@@ -96,6 +97,7 @@ public class ShopItem {
         value = v;
     }
     
+    @Override
     public void buy() {
         Application.get().getEventManager().queueEvent(event);
     }

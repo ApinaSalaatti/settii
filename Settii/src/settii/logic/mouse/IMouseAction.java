@@ -9,7 +9,10 @@ package settii.logic.mouse;
  * @author ApinaSalaatti
  */
 public interface IMouseAction {
-    public void execute(int mX, int mY, int button);
+    // this is prolly unnecessary??
     public void update(long deltaMs);
-    public void render();
+    
+    public boolean onMouseDown(int mX, int mY, int button);
+    public boolean onMouseUp(int mX, int mY, int button);
+    public boolean onPointerMove(int mX, int mY, int mDX, int mDY);
 }

@@ -29,7 +29,7 @@ public class PhysicsComponent extends BaseComponent {
     private float targetX, targetY, targetAngle;
     
     private Rectangle hitbox; // our hitbox is always axis-aligned and our location is in the center of it
-    private int health;
+    private int health, maxHealth;
     private int damage; // possible damage for this actor, only applies to projectiles
     
     private long lifetime; // lifetime of the actor in milliseconds. 0 = infinity
@@ -86,6 +86,12 @@ public class PhysicsComponent extends BaseComponent {
     }
     public void setHealth(int h) {
         health = h;
+    }
+    public int getMaxHealth() {
+        return maxHealth;
+    }
+    public void setMaxHealth(int h) {
+        maxHealth = h;
     }
     /**
      * Take damage and return true if killed.
@@ -239,7 +245,7 @@ public class PhysicsComponent extends BaseComponent {
                     height = Float.parseFloat(value.getNodeValue());
                 }
                 else if(node.getNodeName().equalsIgnoreCase("health")) {
-                    health = Integer.parseInt(value.getNodeValue());
+                    health = maxHealth = Integer.parseInt(value.getNodeValue());
                 }
                 else if(node.getNodeName().equalsIgnoreCase("damage")) {
                     damage = Integer.parseInt(value.getNodeValue());

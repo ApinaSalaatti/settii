@@ -95,6 +95,11 @@ public class BitmapFont {
         characters[(int)' '] = 41*16.0f;
         characters[(int)'.'] = 42*16.0f;
         characters[(int)','] = 43*16.0f;
+        characters[(int)'#'] = 44*16.0f;
+        characters[(int)'!'] = 45*16.0f;
+        characters[(int)'?'] = 46*16.0f;
+        characters[(int)'\''] = 47*16.0f;
+        
     }
     
     public float getLetterWidth() {
@@ -188,7 +193,7 @@ public class BitmapFont {
             letter[40+5] = Color.BLACK.a;
             letter[40+6] = u;
             letter[40+7] = v2;
-
+            
             Renderer.get().draw(tex, letter, 0); 
         }
         

@@ -18,19 +18,21 @@ public class ShopScreen extends BaseGameScreen {
         itemSlots = new ArrayList<ShopItemButton>();
     }
     
-    public void addItemSlot(float x, float y) {
-        itemSlots.add(new ShopItemButton(x, y, null));
+    public void addItemSlot(float x, float y, ShopItem i) {
+        itemSlots.add(new ShopItemButton(x, y, i));
     }
     
     @Override
     public void render() {
         super.render();
+        /*
         Collection<ShopItem> items = Application.get().getLogic().getGame().getShop().getAvailableItems();
         int indx = 0;
         for(ShopItem i : items) {
             itemSlots.get(indx).setItem(i);
             indx++;
         }
+        */
         
         for(ShopItemButton sib : itemSlots) {
             sib.render();

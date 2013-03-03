@@ -15,9 +15,14 @@ import settii.eventManager.EventManager;
 import settii.logic.listeners.*;
 import settii.logic.mouse.*;
 import settii.logic.shop.*;
+import settii.logic.research.*;
 import java.util.Random;
+import java.util.HashMap;
+import java.util.Collection;
+import settii.logic.sectors.*;
 
 import org.lwjgl.opengl.Display;
+import org.lwjgl.input.Keyboard;
 import settii.utils.MathUtil;
 /**
  *
@@ -28,16 +33,21 @@ public class SettiLogic implements IGameLogic {
     
     private IMouseAction currentMouseAction;
     
-    ArrayList<Long> playerWeapons;
-    ArrayList<Long> selectedWeapons;
+    private ArrayList<Long> playerWeapons;
+    private ArrayList<Long> selectedWeapons;
     
-    ArrayList<Long> buildings;
+    private ArrayList<Long> buildings;
+    
+    private HashMap<Long, GameSector> sectors;
+    private GameSector currentSector;
     
     private long time;
     private int sinceLastSpawn;
     
     private Player player;
     private Shop shop;
+    private Research research;
+    private long baseID;
     
     public SettiLogic(GameLogic logic) {
         mainLogic = logic;
@@ -53,6 +63,8 @@ public class SettiLogic implements IGameLogic {
         
         player = new Player();
         shop = new Shop();
+        research = new Research();
+        research.createFromXML(Application.get().getResourceManager().getDataManager().getData("assets/data/research.xml"));
         
         // register to listen input events
         Application.get().getEventManager().register(KeyDownEvent.eventType, new KeyDownListener(this));
@@ -62,19 +74,33 @@ public class SettiLogic implements IGameLogic {
         Application.get().getEventManager().register(PointerMoveEvent.eventType, new PointerMoveListener(this));
         Application.get().getEventManager().register(ActorDestroyedEvent.eventType, new ActorDestroyedListener(this));
         Application.get().getEventManager().register(FireWeaponEvent.eventType, new FireWeaponListener(this));
+        Application.get().getEventManager().register(ChangeSectorEvent.eventType, new ChangeSectorListener(this));
         
         // cool testing stuff
+        sectors = new HashMap<Long, GameSector>();
+        sectors.put(1L, new NorthSector(1L));
+        sectors.put(2L, new EastSector(2L));
+        sectors.put(3L, new SouthSector(3L));
+        sectors.put(4L, new WestSector(4L));
+        Application.get().getEventManager().queueEvent(new ChangeSectorEvent(2L));
+        
+        baseID = mainLogic.createActor("assets/data/actors/base.xml");
+        mainLogic.getActor(baseID).move(Display.getWidth() * 1.5f, Display.getHeight() * 1.5f);
+        
+        /*
         long id2 = mainLogic.createActor("assets/data/actors/cannon.xml");
         GameActor act2 = mainLogic.getActor(id2);
-        act2.move(Display.getWidth() / 2, Display.getHeight() - 150);
+        act2.move(Display.getWidth() * 2 + 50, Display.getHeight() + 50);
         addPlayerWeapon(id2);
         
         for(int i = 0; i < 4; i++) {
             long b = mainLogic.createActor("assets/data/actors/building.xml");
             GameActor building = mainLogic.getActor(b);
-            building.move(i*200 + 150, Display.getHeight() - 128 / 2);
+            building.move(i*200 + Display.getWidth() * 2, Display.getHeight() + 200);
             buildings.add(b);
         }
+        * 
+        */
     }
     
     public SettiLogic(String resource) {
@@ -88,6 +114,8 @@ public class SettiLogic implements IGameLogic {
         
         if(sinceLastSpawn > 5000) {
             int r = Application.get().getRNG().nextInt(6) + 1;
+            sectors.get(2L).spawnEnemy();
+            /*
             if(r > 3) {
                 r = Application.get().getRNG().nextInt(Display.getWidth() - 100) + 50;
                 long id = mainLogic.createActor("assets/data/actors/enemy.xml");
@@ -97,6 +125,9 @@ public class SettiLogic implements IGameLogic {
                 pc.setAngleRad(MathUtil.ANGLE_STRAIGHT_DOWN);
                 sinceLastSpawn = 0;
             }
+            * 
+            */
+            sinceLastSpawn = 0;
         }
         
         player.update(deltaMs);
@@ -113,6 +144,9 @@ public class SettiLogic implements IGameLogic {
     public ArrayList<Long> getBuildings() {
         return buildings;
     }
+    public long getBaseID() {
+        return baseID;
+    }
     
     public Player getPlayer() {
         return player;
@@ -120,12 +154,41 @@ public class SettiLogic implements IGameLogic {
     public Shop getShop() {
         return shop;
     }
+    public Research getResearch() {
+        return research;
+    }
+    
+    public GameSector getSector(long id) {
+        return sectors.get(id);
+    }
+    public GameSector getCurrentSector() {
+        return currentSector;
+    }
+    public Collection<GameSector> getSectors() {
+        return sectors.values();
+    }
     
     public IMouseAction getMouseAction() {
         return currentMouseAction;
     }
     
     public boolean KeyDownListener(int key) {
+        if(key == Keyboard.KEY_LEFT) {
+            Application.get().getEventManager().queueEvent(new ChangeSectorEvent(4L));
+            return true;
+        }
+        if(key == Keyboard.KEY_RIGHT) {
+            Application.get().getEventManager().queueEvent(new ChangeSectorEvent(2L));
+            return true;
+        }
+        if(key == Keyboard.KEY_UP) {
+            Application.get().getEventManager().queueEvent(new ChangeSectorEvent(1L));
+            return true;
+        }
+        if(key == Keyboard.KEY_DOWN) {
+            Application.get().getEventManager().queueEvent(new ChangeSectorEvent(3L));
+            return true;
+        }
         return false;
     }
     
@@ -134,15 +197,18 @@ public class SettiLogic implements IGameLogic {
     }
     
     public boolean MouseDownListener(int mX, int mY, int button) {
-        currentMouseAction.execute(mX, mY, button);
+        currentMouseAction.onMouseDown(mX, mY, button);
         return true;
     }
     
     public boolean MouseUpListener(int mX, int mY, int button) {
+        currentMouseAction.onMouseUp(mX, mY, button);
         return false;
     }
     
     public boolean PointerMoveListener(int mX, int mY, int mDX, int mDY) {
+        currentMouseAction.onPointerMove(mX, mY, mDX, mDY);
+        
         for(long a : selectedWeapons) {
             GameActor act = mainLogic.getActor(a);
             PhysicsComponent pc = (PhysicsComponent)act.getComponent("PhysicsComponent");
@@ -199,5 +265,9 @@ public class SettiLogic implements IGameLogic {
                 wc.fire();
             }
         }
+    }
+    
+    public void changeSectorListener(long id) {
+        currentSector = sectors.get(id);
     }
 }

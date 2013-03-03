@@ -17,6 +17,7 @@ import settii.views.humanView.renderer.Renderer;
 import settii.views.humanView.listeners.*;
 import settii.views.ui.gameplayScreen.*;
 import settii.views.ui.mainMenuScreen.*;
+import settii.views.ui.commandCenterScreen.*;
 import settii.views.humanView.renderer.BitmapFont;
 import settii.views.humanView.renderer.Texture;
 /**
@@ -26,14 +27,15 @@ import settii.views.humanView.renderer.Texture;
 public class HumanView implements IGameView {
     private Camera camera;
     
-    // cursor stuff
+    // mouse stuff
     private Texture cursor;
     private float mouseX, mouseY;
-    
-    private long attachedActor;
+    private float mSensitivity;
     
     private GameScene scene;
     private ArrayDeque<IGameScreen> screens;
+    
+    private Tooltip tooltip; // this shit's here so I can render it last. There's prolly a better way?
 
     public HumanView() {
         scene = new GameScene();
@@ -42,6 +44,10 @@ public class HumanView implements IGameView {
         camera = new Camera();
         
         screens.addFirst(GameplayScreenFactory.create());
+        
+        Application.get().getEventManager().register(ChangeSectorEvent.eventType, new ChangeSectorListener(this));
+        
+        tooltip = null;
     }
     
     public boolean init() {
@@ -51,19 +57,46 @@ public class HumanView implements IGameView {
         }
         
         cursor = Application.get().getResourceManager().getTextureManager().getTexture("assets/graphics/ui/cursor.png");
-        mouseX = 0;
-        mouseY = Display.getHeight();
+        mouseX = Display.getWidth() / 2;
+        mouseY = Display.getHeight() / 2;
+        
+        GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
+        //Texture load = Application.get().getResourceManager().getTextureManager().getTexture("assets/graphics/ui/loading.png");
+        Renderer.get().begin();
+        //Renderer.get().draw(load, -112, -192);
+        Renderer.get().drawText("LOADING STUFF...", 200, 300);
+        Renderer.get().end();
+        Display.update();
+        // load the (biggest and most used) assets
+        // TODO: figure out how to do this more efficiently...
+        try {
+            Application.get().getResourceManager().getTextureManager().getTexture("assets/graphics/ui/cursor.png");
+            Application.get().getResourceManager().getTextureManager().getTexture("assets/graphics/ui/commandcenterscreen/background.png");
+            Application.get().getResourceManager().getTextureManager().getTexture("assets/graphics/ui/commandcenterscreen/baseHealthy.png");
+            Application.get().getResourceManager().getTextureManager().getTexture("assets/graphics/ui/commandcenterscreen/baseDamaged.png");
+            Application.get().getResourceManager().getTextureManager().getTexture("assets/graphics/ui/commandcenterscreen/baseCritical.png");
+            Application.get().getResourceManager().getTextureManager().getTexture("assets/graphics/ui/commandcenterscreen/mapDisplay.png");
+            Application.get().getResourceManager().getTextureManager().getTexture("assets/graphics/ui/researchscreen/background.png");
+            Application.get().getResourceManager().getTextureManager().getTexture("assets/graphics/ui/gameplayscreen/commandCenterButton.png");
+            Application.get().getResourceManager().getTextureManager().getTexture("assets/graphics/ui/cursor.png");
+        }
+        catch(Exception e) {
+            System.out.println("Failed to load assets!");
+        }
+        
         return true;
     }
 
-    /*
-    public long getAttachedActor() {
-        return attachedActor;
+    public void setCursor(Texture tex) {
+        cursor = tex;
     }
-    public void attachActor(long actor) {
-        attachedActor = actor;
+    public void setCursor(String res) {
+        cursor = Application.get().getResourceManager().getTextureManager().getTexture(res);
     }
-    */
+    
+    public void setTooltip(Tooltip t) {
+        tooltip = t;
+    }
     
     @Override
     public void update(long deltaMs) {
@@ -84,18 +117,23 @@ public class HumanView implements IGameView {
         scene.render();
         Renderer.get().end();
         
-        // render user interface stuff
+        // render and update user interface stuff
+        // TODO should we update here?? Propably, so we don't have to iterate through the screens many times...
         // set offset uniform to zero for user interface rendering
         Renderer.get().setOffset(0, 0);
         Renderer.get().begin();
         Iterator<IGameScreen> it = screens.descendingIterator();
         while(it.hasNext()) {
             IGameScreen screen = it.next();
+            screen.update(deltaMs);
             screen.render();
         }
         
-        // render cursor last
+        // render cursor and tooltip last
         Renderer.get().draw(cursor, mouseX-cursor.getWidth()/2, mouseY-cursor.getHeight()/2);
+        if(tooltip != null) {
+            tooltip.render();
+        }
         
         Renderer.get().end();
     }
@@ -121,29 +159,53 @@ public class HumanView implements IGameView {
 	}
         
         // mouse input
+        float mDX = Mouse.getDX() * 2.5f; // mouse sensitivity 2.5, testing stuff...
+        float mDY = -Mouse.getDY() * 2.5f; // invert y-axis to match all our coordinates
+        
+        mouseX += mDX;
+        mouseY += mDY;
+        if(mouseX < 0) {
+            mouseX = 0;
+        }
+        else if(mouseX > Display.getWidth()) {
+            mouseX = Display.getWidth();
+        }
+        if(mouseY < 0) {
+            mouseY = 0;
+        }
+        else if(mouseY > Display.getHeight()) {
+            mouseY = Display.getHeight();
+        }
+        
         while(Mouse.next()) {
             int button = Mouse.getEventButton();
             int mX = Mouse.getEventX();
             int mY = Display.getHeight() - Mouse.getEventY(); // invert the y-axis to match all our coordinates
             if(button != -1) { // check that a state of a mouse button has changed
                 if(Mouse.getEventButtonState()) {
-                    onMouseDown(mX, mY, button);
+                    onMouseDown((int)mouseX, (int)mouseY, button);
                 }
                 else {
-                    onMouseUp(mX, mY, button);
+                    onMouseUp((int)mouseX, (int)mouseY, button);
                 }
             }
         }
         
+        /*
         int mX = Mouse.getX();
         int mY = Display.getHeight() - Mouse.getY(); // invert the y-axis to match all our coordinates
-        mouseX = mX;
-        mouseY = mY;
+        //mouseX = mX;
+        //mouseY = mY;
         int mDX = Mouse.getDX();
         int mDY = -Mouse.getDY(); // invert y-axis yet again
         
+        mouseX += mDX * 2.5f;
+        mouseY += mDY * 2.5f;
+        * 
+        */
+        
         if(mDX != 0 || mDY != 0) {
-            onPointerMove(mX, mY, mDX, mDY);
+            onPointerMove((int)mouseX, (int)mouseY, (int)mDX, (int)mDY);
         }
         
         return false;
@@ -162,6 +224,10 @@ public class HumanView implements IGameView {
         
         if(camera.onKeyDown(key)) {
             return true;
+        }
+        
+        if(key == Keyboard.KEY_C || key == Keyboard.KEY_ESCAPE) {
+            addScreen(CommandCenterScreenFactory.create());
         }
         
         Application.get().getEventManager().queueEvent(new KeyDownEvent(key));
@@ -260,5 +326,12 @@ public class HumanView implements IGameView {
         Application.get().getEventManager().queueEvent(new PointerMoveEvent(mX, mY, mDX, mDY));
         
         return false;
+    }
+    
+    public void changeSectorListener(long id) {
+        float sX = Application.get().getLogic().getGame().getSector(id).getX();
+        float sY = Application.get().getLogic().getGame().getSector(id).getY();
+        
+        camera.setLocation(sX, sY);
     }
 }

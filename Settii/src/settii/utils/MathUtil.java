@@ -9,7 +9,9 @@ import org.lwjgl.util.vector.Matrix4f;
 public class MathUtil {
     public static final float PI = 3.141592653589793f;
     public static final float ANGLE_STRAIGHT_UP = PI / 2.0f;
+    public static final float ANGLE_STRAIGHT_RIGHT = PI;
     public static final float ANGLE_STRAIGHT_DOWN = (3.0f * PI) / 2.0f;
+    public static final float ANGLE_STRAIGHT_LEFT = 0;
     
     /*
      * Converts given degree angle to radians.
@@ -32,6 +34,18 @@ public class MathUtil {
     
     public static float toRenderAngle(float angle) {
         return angle - PI / 2.0f;
+    }
+    
+    /*
+     * Returns and angle that is directly opposite of the given angle (i.e. at 180 degrees angle with it)
+     */
+    public static float getOppositeAngleRad(float angle) {
+        if(angle - PI > 0) {
+            return angle - PI;
+        }
+        else {
+            return angle + PI;
+        }
     }
     
     /**

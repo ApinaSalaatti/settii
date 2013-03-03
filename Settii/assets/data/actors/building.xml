@@ -3,9 +3,11 @@
 		<width>55</width>
 		<height>110</height>
 		<health>200</health>
+		<turnSpeed>0</turnSpeed>
 		<Rendering><default>assets/graphics/actors/building.png</default><selected>assets/graphics/actors/building.png</selected></Rendering>
 	</PhysicsComponent>
 	<StatusComponent>
+		<ActorName>Building</ActorName>
 		<ActorType>building</ActorType>
 		<Allegiance>friendly</Allegiance>
 	</StatusComponent>

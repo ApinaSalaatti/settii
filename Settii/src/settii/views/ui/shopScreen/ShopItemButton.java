@@ -27,7 +27,7 @@ public class ShopItemButton extends BaseScreenItem {
     
     @Override
     public boolean onMouseDown(int mX, int mY, int button) {
-        if(mX > x && mX < x + width && mY > y && mY < y + height) {
+        if(button == 0 && mX > x && mX < x + width && mY > y && mY < y + height) {
             if(item != null) {
                 Application.get().getEventManager().queueEvent(new AttemptToBuyEvent(item));
                 

@@ -1,5 +1,6 @@
 package settii.actorManager.listeners;
 
+import settii.eventManager.events.researchEvents.UpdateDamageEvent;
 import settii.eventManager.IGameEventListener;
 import settii.eventManager.events.IGameEvent;
 import settii.eventManager.events.shopEvents.*;

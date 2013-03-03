@@ -40,7 +40,6 @@ public class Application {
     private GameLogic logic;
     private HumanView humanView;
     private EventManager eventManager;
-    private InputControl controller;
     
     private boolean quitting;
     
@@ -67,10 +66,6 @@ public class Application {
         return eventManager;
     }
     
-    public InputControl getInputControl() {
-        return controller;
-    }
-    
     public ResourceManager getResourceManager() {
         return resManager;
     }
@@ -80,7 +75,7 @@ public class Application {
     }
     
     /**
-     * Initialize stuff. Do it here so the constructor can't fail.
+     * Initialize stuff..
      * 
      * @return was initialization succesful
      */

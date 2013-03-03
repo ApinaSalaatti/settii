@@ -1,6 +1,6 @@
 package settii.eventManager.events;
 
-import settii.logic.shop.ShopItem;
+import settii.logic.shop.Sellable;
 /**
  *
  * @author Merioksan Mikko
@@ -8,9 +8,9 @@ import settii.logic.shop.ShopItem;
 public class AttemptToBuyEvent implements IGameEvent {
     public static long eventType = 18;
     
-    private ShopItem item;
+    private Sellable item;
     
-    public AttemptToBuyEvent(ShopItem item) {
+    public AttemptToBuyEvent(Sellable item) {
         this.item = item;
     }
     
@@ -22,7 +22,7 @@ public class AttemptToBuyEvent implements IGameEvent {
     public int getCost() {
         return item.getValue();
     }
-    public ShopItem getItem() {
+    public Sellable getItem() {
         return item;
     }
 }

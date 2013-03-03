@@ -12,11 +12,16 @@ public class BaseScreenItem implements IScreenItem {
     protected float xOffset, yOffset;
     protected float width, height;
     
-    private Texture sprite;
+    protected Texture sprite;
     
     protected boolean beingDragged;
     protected boolean visible;
     protected boolean clicked, selected;
+    
+    // tooltip stuff! Just testing...
+    protected boolean pointerOver, renderTooltip;
+    protected long pointerHovered, tooltipDelay;
+    protected Tooltip tooltip;
     
     public BaseScreenItem() {
         beingDragged = false;
@@ -38,6 +43,12 @@ public class BaseScreenItem implements IScreenItem {
         visible = true;
         clicked = false;
         selected = false;
+        
+        pointerOver = false;
+        renderTooltip = false;
+        pointerHovered = 0;
+        tooltipDelay = 1000;
+        tooltip = null;
     }
     
     @Override
@@ -82,9 +93,45 @@ public class BaseScreenItem implements IScreenItem {
     }
     
     @Override
+    public void update(long deltaMs) {
+        if(pointerOver) {
+            pointerHovered += deltaMs;
+        }
+        if(pointerHovered >= tooltipDelay) {
+            renderTooltip = true;
+            Application.get().getHumanView().setTooltip(tooltip);
+        }
+        else {
+            if(renderTooltip) {
+                renderTooltip = false;
+                Application.get().getHumanView().setTooltip(null);
+            }
+        }
+    }
+    
+    @Override
+    public void setTooltip(String t) {
+        tooltip = new Tooltip();
+        tooltip.set(t);
+    }
+    public void setTooltipDelay(long ms) {
+        tooltipDelay = ms;
+    }
+    
+    @Override
     public void render() {
         if(sprite != null) {
-            Renderer.get().draw(sprite, x, y);
+            float offsetX = (sprite.getWidth() - width) / 2;
+            float offsetY = (sprite.getHeight() - height) / 2;
+            
+            float drawX = x - offsetX;
+            float drawY = y - offsetY;
+            
+            Renderer.get().draw(sprite, drawX, drawY);
+        }
+        
+        if(renderTooltip && tooltip != null) {
+            //tooltip.render();
         }
     }
     
@@ -111,6 +158,17 @@ public class BaseScreenItem implements IScreenItem {
     
     @Override
     public boolean onPointerMove(int mX, int mY, int mDX, int mDY) {
+        if(mX > x && mX < x + width && mY > y && mY < y + height) {
+            pointerOver = true;
+            if(tooltip != null) {
+                tooltip.setLocation(mX+20, mY+20);
+            }
+        }
+        else {
+            pointerOver = false;
+            pointerHovered = 0;
+            renderTooltip = false;
+        }
         return false;
     }
 }

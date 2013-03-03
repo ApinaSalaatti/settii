@@ -32,5 +32,9 @@ public class StatusDisplay extends BaseScreenItem {
         
         Renderer.get().drawText("Exp:", x + 600, y + 5);
         Renderer.get().drawText(player.getExp() + "", x + 600 + 4*16, y + 5);
+        
+        if(Application.get().getLogic().getGame().getCurrentSector() != null) {
+            Renderer.get().drawText(Application.get().getLogic().getGame().getCurrentSector().getName(), x + 5, y + 40);
+        }
     }
 }

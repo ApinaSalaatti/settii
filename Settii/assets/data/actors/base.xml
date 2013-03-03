@@ -1,0 +1,15 @@
+<Actor>
+	<PhysicsComponent>
+		<width>500</width>
+		<height>500</height>
+		<health>100</health>
+	</PhysicsComponent>
+	<WeaponsComponent>
+		<damage>20</damage>
+	</WeaponsComponent>
+	<StatusComponent>
+		<ActorName>Base</ActorName>
+		<ActorType>base</ActorType>
+		<Allegiance>friendly</Allegiance>
+	</StatusComponent>
+</Actor>
