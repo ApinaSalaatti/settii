@@ -3,10 +3,14 @@
 		<width>50</width>
 		<height>50</height>
 		<health>100</health>
-		<Rendering><default>assets/graphics/actors/bigCannon.png</default><selected>assets/graphics/actors/bigCannonSelected.png</selected></Rendering>
+		<Rendering><animationFile>assets/graphics/actors/bigCannon.png</animationFile></Rendering>
 	</PhysicsComponent>
+	<AIComponent>
+		<HumanBasicWeapon></HumanBasicWeapon>
+	</AIComponent>
 	<WeaponsComponent>
 		<damage>20</damage>
+		<rateOfFire>1000</rateOfFire>
 	</WeaponsComponent>
 	<StatusComponent>
 		<ActorName>Big Cannon</ActorName>

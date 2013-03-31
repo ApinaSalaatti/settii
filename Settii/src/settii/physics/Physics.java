@@ -13,10 +13,10 @@ import java.awt.Rectangle;
  */
 public class Physics {
     private GameLogic mainLogic;
-    
+    private int timesChecked;
     public Physics(GameLogic logic) {
         mainLogic = logic;
-        
+        timesChecked = 0;
         Application.get().getEventManager().register(ActorMovedEvent.eventType, new ActorMovedListener(this));
     }
     
@@ -29,12 +29,17 @@ public class Physics {
     }
     
     public boolean checkCollisions(long actor) {
+        timesChecked++;
         GameActor a1 = mainLogic.getActor(actor);
-        if(a1 != null) {
-            StatusComponent sc1 = (StatusComponent)a1.getComponent("StatusComponent");
-            for(GameActor a2 : mainLogic.getActors()) {
+        if(a1 == null || !a1.isEnabled()) {
+            return false;
+        }
+        
+        StatusComponent sc1 = (StatusComponent)a1.getComponent("StatusComponent");
+        for(GameActor a2 : mainLogic.getActors()) {
+            if(a2.isEnabled()) {
                 StatusComponent sc2 = (StatusComponent)a2.getComponent("StatusComponent");
-                
+
                 // no friendly fire
                 if(!sc1.getAllegiance().equals(sc2.getAllegiance())) {
                     GameActor proj = null;
@@ -57,6 +62,7 @@ public class Physics {
         return false;
     }
     
+    // TODO: make the hitboxes turn with the actors. (better yet: do all this shit again from the ground up)
     public boolean checkProjectileCollision(GameActor proj, GameActor other) {
         // currently we are only interested in collision between a projectile and another type of actor
         if(proj == null || other == null) {
@@ -84,7 +90,7 @@ public class Physics {
         if(projHb.y > otherHb.y + otherHb.height) {
             return false;
         }
-
+        
         // we got here, we got a HIT!
         Application.get().getEventManager().queueEvent(new CollisionEvent(proj, other));
         otherPC.takeDamage(projPC.getDamage());
@@ -102,7 +108,7 @@ public class Physics {
         }
         * 
         */
-        Application.get().getEventManager().queueEvent(new ActorDestroyedEvent(proj)); // destroy the projectile
+        Application.get().getEventManager().executeEvent(new ActorDestroyedEvent(proj)); // destroy the projectile
         return true;
     }
     

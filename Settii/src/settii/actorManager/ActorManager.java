@@ -4,9 +4,9 @@ import settii.eventManager.events.researchEvents.UpdateDamageEvent;
 import settii.Application;
 import settii.actorManager.components.*;
 import settii.actorManager.listeners.*;
-import settii.eventManager.events.*;
-import settii.eventManager.events.shopEvents.*;
 import java.util.HashMap;
+import java.util.Iterator;
+import settii.eventManager.events.researchEvents.UpdateRangeEvent;
 /**
  *
  * @author Merioksan Mikko
@@ -24,6 +24,7 @@ public class ActorManager {
         actors = new HashMap<String, GameActor>();
         
         Application.get().getEventManager().register(UpdateDamageEvent.eventType, new UpdateDamageListener(this));
+        Application.get().getEventManager().register(UpdateRangeEvent.eventType, new UpdateRangeListener(this));
     }
     
     public boolean init() {
@@ -56,6 +57,27 @@ public class ActorManager {
         return returned;
     }
     
+    public void clear() {
+        actors.clear();
+    }
+    
+    public void enableComponent(String comp) {
+        Iterator<GameActor> it = actors.values().iterator();
+        
+        while(it.hasNext()) {
+            GameActor actor = it.next();
+            actor.enableComponent(comp);
+        }
+    }
+    public void disableComponent(String comp) {
+        Iterator<GameActor> it = actors.values().iterator();
+        
+        while(it.hasNext()) {
+            GameActor actor = it.next();
+            actor.disableComponent(comp);
+        }
+    }
+    
     public void updateDamageListener(String resource, int damageToAdd) {
         GameActor actor = actors.get(resource);
         if(actor == null) {
@@ -65,5 +87,16 @@ public class ActorManager {
         
         WeaponsComponent wc = (WeaponsComponent)actor.getComponent("WeaponsComponent");
         wc.setDamage(wc.getDamage() + damageToAdd);
+    }
+    
+    public void updateRangeListener(String resource, int rangeToAdd) {
+        GameActor actor = actors.get(resource);
+        if(actor == null) {
+            createPrototype(resource);
+            actor = actors.get(resource);
+        }
+        
+        WeaponsComponent wc = (WeaponsComponent)actor.getComponent("WeaponsComponent");
+        wc.setRange(wc.getRange() + rangeToAdd);
     }
 }

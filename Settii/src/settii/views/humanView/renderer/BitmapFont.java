@@ -10,12 +10,16 @@ public class BitmapFont {
     private float letterHeight;
     private float[] characters;
     
+    private Color color;
+    
     public BitmapFont(String resource) {
         tex = Application.get().getResourceManager().getTextureManager().getTexture(resource);
         letterWidth = 16.0f;
         letterHeight = 32.0f;
         
         characters = new float[1024];
+        
+        color = new Color(Color.BLACK); // default text is black
         
         // numbers
         characters[(int)'0'] = 0.0f;
@@ -109,6 +113,13 @@ public class BitmapFont {
         return letterHeight;
     }
     
+    public Color getColor() {
+        return color;
+    }
+    public void setColor(Color c) {
+        color = c;
+    }
+    
     public void renderText(String text, float x, float y) {
         renderText(text, x, y, 1.0f);
     }
@@ -137,60 +148,60 @@ public class BitmapFont {
             // top left
             letter[0] = x + i * letterWidth * scale;
             letter[1] = y;
-            letter[2] = Color.BLACK.r;
-            letter[3] = Color.BLACK.g;
-            letter[4] = Color.BLACK.b;
-            letter[5] = Color.BLACK.a;
+            letter[2] = color.r;
+            letter[3] = color.g;
+            letter[4] = color.b;
+            letter[5] = color.a;
             letter[6] = u;
             letter[7] = v;
             
             // top right
             letter[8+0] = x + letterWidth * scale + i * letterWidth * scale;
             letter[8+1] = y;
-            letter[8+2] = Color.BLACK.r;
-            letter[8+3] = Color.BLACK.g;
-            letter[8+4] = Color.BLACK.b;
-            letter[8+5] = Color.BLACK.a;
+            letter[8+2] = color.r;
+            letter[8+3] = color.g;
+            letter[8+4] = color.b;
+            letter[8+5] = color.a;
             letter[8+6] = u2;
             letter[8+7] = v;
 
             // bottom left
             letter[16+0] = x + i * letterWidth * scale;
             letter[16+1] = y + letterHeight * scale;
-            letter[16+2] = Color.BLACK.r;
-            letter[16+3] = Color.BLACK.g;
-            letter[16+4] = Color.BLACK.b;
-            letter[16+5] = Color.BLACK.a;
+            letter[16+2] = color.r;
+            letter[16+3] = color.g;
+            letter[16+4] = color.b;
+            letter[16+5] = color.a;
             letter[16+6] = u;
             letter[16+7] = v2;
 
             // top right
             letter[24+0] = x + letterWidth * scale + i * letterWidth * scale;
             letter[24+1] = y;
-            letter[24+2] = Color.BLACK.r;
-            letter[24+3] = Color.BLACK.g;
-            letter[24+4] = Color.BLACK.b;
-            letter[24+5] = Color.BLACK.a;
+            letter[24+2] = color.r;
+            letter[24+3] = color.g;
+            letter[24+4] = color.b;
+            letter[24+5] = color.a;
             letter[24+6] = u2;
             letter[24+7] = v;
 
             // bottom right
             letter[32+0] = x + letterWidth * scale + i * letterWidth * scale;
             letter[32+1] = y + letterHeight * scale;
-            letter[32+2] = Color.BLACK.r;
-            letter[32+3] = Color.BLACK.g;
-            letter[32+4] = Color.BLACK.b;
-            letter[32+5] = Color.BLACK.a;
+            letter[32+2] = color.r;
+            letter[32+3] = color.g;
+            letter[32+4] = color.b;
+            letter[32+5] = color.a;
             letter[32+6] = u2;
             letter[32+7] = v2;
 
             // bottom left
             letter[40+0] = x + i * letterWidth * scale;
             letter[40+1] = y + letterHeight * scale;
-            letter[40+2] = Color.BLACK.r;
-            letter[40+3] = Color.BLACK.g;
-            letter[40+4] = Color.BLACK.b;
-            letter[40+5] = Color.BLACK.a;
+            letter[40+2] = color.r;
+            letter[40+3] = color.g;
+            letter[40+4] = color.b;
+            letter[40+5] = color.a;
             letter[40+6] = u;
             letter[40+7] = v2;
             

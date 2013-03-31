@@ -1,0 +1,60 @@
+<Shop>
+	<InitialRepairCost>1000</InitialRepairCost>
+	
+	<ShopItem>
+		<Name>Durex Ultra Thin</Name>
+		<Description>It's like you're not wearing one at all! Shame it also breaks very easily.</Description>
+		<Sprite>assets/graphics/shop/durexThin.png</Sprite>
+		<Cost>100</Cost>
+		<Event>
+			<Name>Buy Actor</Name>
+			<Resource>assets/data/actors/durexThin.xml</Resource>
+		</Event>
+	</ShopItem>
+	
+	<ShopItem>
+		<Name>Durex</Name>
+		<Description>A Durex with normal thickness. Still feels nice and offers good protection!</Description>
+		<Sprite>assets/graphics/shop/durex.png</Sprite>
+		<Cost>300</Cost>
+		<Event>
+			<Name>Buy Actor</Name>
+			<Resource>assets/data/actors/durex.xml</Resource>
+		</Event>
+	</ShopItem>
+	
+	<ShopItem>
+		<Name>Magic</Name>
+		<Description>Puts pressure in exactly the right places. Allows for very rapid defence.</Description>
+		<Sprite>assets/graphics/shop/magic.png</Sprite>
+		<Cost>300</Cost>
+		<Event>
+			<Name>Buy Actor</Name>
+			<Resource>assets/data/actors/magic.xml</Resource>
+		</Event>
+	</ShopItem>
+	
+	<ShopItem>
+		<Name>Sultan Strawberry</Name>
+		<Description>A tasty one! Offers great pleasure and protection even from oral enemies.</Description>
+		<Sprite>assets/graphics/shop/sultan.png</Sprite>
+		<Cost>300</Cost>
+		<Event>
+			<Name>Buy Actor</Name>
+			<Resource>assets/data/actors/sultan.xml</Resource>
+		</Event>
+	</ShopItem>
+	
+	<ShopItem>
+		<Name>Contraceptive Pill</Name>
+		<Description>An incredibly easy-to-use protection method! It's so easy it even targets on its own.</Description>
+		<Sprite>assets/graphics/shop/contraceptivePill.png</Sprite>
+		<Cost>300</Cost>
+		<Event>
+			<Name>Buy Actor</Name>
+			<Resource>assets/data/actors/contraceptivePill.xml</Resource>
+		</Event>
+	</ShopItem>
+	
+	<AvailableItem>assets/data/actors/durexThin.xml</AvailableItem>
+</Shop>

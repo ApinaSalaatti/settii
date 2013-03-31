@@ -3,6 +3,7 @@ package settii.views.ui.researchScreen;
 import java.util.ArrayList;
 import org.lwjgl.input.Keyboard;
 import settii.Application;
+import settii.actorManager.components.InventoryComponent;
 import settii.views.ui.*;
 import settii.logic.research.ResearchItem;
 import settii.views.humanView.renderer.Renderer;
@@ -69,12 +70,12 @@ public class ResearchScreen extends BaseGameScreen {
     public void update(long deltaMs) {
         super.update(deltaMs);
         
-        // cool hack! if we have bought an update, we first flag that as done and at the next update, when the research event has been triggered, we update the tree!
+        // cool! if we have bought an update, we first flag that as done and at the next update, when the research event has been triggered, we update the tree!
         if(updateResearch) {
             itemSlots.clear();
             int indx = 0;
             for(ResearchItem ri : Application.get().getLogic().getGame().getResearch().getRoots()) {
-                ResearchScreenFactory.createTree(this, ri, 100, 100+indx*90);
+                ResearchScreenFactory.createTrees(this);
                 indx++;
             }
             updateResearch = false;
@@ -98,5 +99,7 @@ public class ResearchScreen extends BaseGameScreen {
         }
         
         Renderer.get().drawText("Hover over a research item for more info!", 80, 30);
+        InventoryComponent ic = Application.get().getLogic().getGame().getPlayer().getInventory();
+        Renderer.get().drawText("Current money: " + ic.getMoney(), 80, 63);
     }
 }

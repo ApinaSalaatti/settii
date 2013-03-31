@@ -10,16 +10,22 @@ import settii.eventManager.events.shopEvents.*;
  * @author Merioksan Mikko
  */
 public class ShopItem implements Sellable {
-    private String resource;
     private String sprite;
-    private int damage;
-    private int health;
+    
+    private String name;
+    private String description;
     
     private ShopEvent event;
     
     private int value;
     
     public ShopItem(String sprite, int value, ShopEvent event) {
+        this("Buy me!", "Please, please buy me!", sprite, value, event);
+    }
+    
+    public ShopItem(String name, String description, String sprite, int value, ShopEvent event) {
+        this.name = name;
+        this.description = description;
         this.sprite = sprite;
         this.value = value;
         this.event = event;
@@ -89,6 +95,13 @@ public class ShopItem implements Sellable {
         return sprite;
     }
     
+    public String getName() {
+        return name;
+    }
+    public String getDescription() {
+        return description;
+    }
+    
     @Override
     public int getValue() {
         return value;
@@ -98,7 +111,8 @@ public class ShopItem implements Sellable {
     }
     
     @Override
-    public void buy() {
+    public boolean buy() {
         Application.get().getEventManager().queueEvent(event);
+        return true;
     }
 }

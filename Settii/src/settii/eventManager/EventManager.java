@@ -11,7 +11,7 @@ import settii.eventManager.events.ActorDestroyedEvent;
  * @author Merioksan Mikko
  */
 public class EventManager {
-    private static long lastEventType = 22; // LOL just for me to remember it :---------)
+    private static long lastEventType = 30; // LOL just for me to remember it :---------)
     
     private static EventManager instance = new EventManager();
     private HashMap<Long, ArrayList<IGameEventListener>> eventListeners;

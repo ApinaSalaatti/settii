@@ -15,13 +15,18 @@ import org.w3c.dom.NodeList;
 public class GameActor {
     private long actorID;
     private HashMap<String, BaseComponent> components;
+    private HashMap<String, Boolean> enabledComponents;
     
     private String resource; // the xml-file this actor was created from
+    
+    private boolean enabled; // is the actor enabled, i.e. correctly placed in the world and stuff (this is propably really stupid thing...)
     
     public GameActor(long id, String res) {
         actorID = id;
         components = new HashMap<String, BaseComponent>();
+        enabledComponents = new HashMap<String, Boolean>();
         resource = res;
+        enabled = true;
     }
     
     public long getID() {
@@ -30,6 +35,7 @@ public class GameActor {
     
     public void addComponent(BaseComponent comp) {
         components.put(comp.getName(), comp);
+        enabledComponents.put(comp.getName().toLowerCase(), true);
     }
     public BaseComponent getComponent(String comp) {
         return components.get(comp);
@@ -37,6 +43,25 @@ public class GameActor {
     
     public String getResource() {
         return resource;
+    }
+    
+    public void disable() {
+        enabled = false;
+    }
+    public void enable() {
+        enabled = true;
+    }
+    public boolean isEnabled() {
+        return enabled;
+    }
+    
+    public void enableComponent(String comp) {
+        comp = comp.toLowerCase();
+        enabledComponents.put(comp, true);
+    }
+    public void disableComponent(String comp) {
+        comp = comp.toLowerCase();
+        enabledComponents.put(comp, false);
     }
     
     public void move(float x, float y) {
@@ -48,32 +73,37 @@ public class GameActor {
     }
     
     public void update(long deltaMs) {
-        for(BaseComponent b : components.values()) {
-            b.update(deltaMs);
+        if(enabled) { // don't update disabled actors
+            for(BaseComponent b : components.values()) {
+                if(enabledComponents.get(b.getName().toLowerCase())) {
+                    b.update(deltaMs);
+                }
+            }
         }
     }
     
     public boolean locationWithinActor(double x, double y) {
-        PhysicsComponent pc = (PhysicsComponent)getComponent("PhysicsComponent");
-        //HitboxComponent hc = (HitboxComponent)getComponent("HitboxComponent");
-        
-        if(pc != null) {
-            Rectangle hb = pc.getHitbox();
-            if(x > hb.getX() && x < hb.getX() + hb.getWidth() && y > hb.getY() && y < hb.getY() + hb.getHeight()) {
-                return true;
-            }
-        }
-        
-        // TODO: add proper hitboxes perhaps maybe
-        /*
-        if(lc != null && hc != null) {
-            double relativeX = x - lc.getX();
-            double relativeY = y - lc.getY();
+        if(enabled) { // disabled actors cannot be targeted (TODO: is this good???)
+            PhysicsComponent pc = (PhysicsComponent)getComponent("PhysicsComponent");
+            //HitboxComponent hc = (HitboxComponent)getComponent("HitboxComponent");
 
-            return hc.locationInsideHitbox(relativeX, relativeY);
+            if(pc != null) {
+                Rectangle hb = pc.getHitbox();
+                if(x > hb.getX() && x < hb.getX() + hb.getWidth() && y > hb.getY() && y < hb.getY() + hb.getHeight()) {
+                    return true;
+                }
+            }
+
+            // TODO: add proper hitboxes perhaps maybe
+            /*
+            if(lc != null && hc != null) {
+                double relativeX = x - lc.getX();
+                double relativeY = y - lc.getY();
+
+                return hc.locationInsideHitbox(relativeX, relativeY);
+            }
+            */
         }
-        */
-        
         return false;
     }
     
@@ -100,6 +130,13 @@ public class GameActor {
         
     }
     
+    public void destroy() {
+        for(BaseComponent bc : components.values()) {
+            bc.destroy();
+        }
+        components.clear();
+    }
+    
     /**
      * Copies this actors components to another actor
      * @param a actor to copy components to
@@ -109,6 +146,15 @@ public class GameActor {
             BaseComponent bc2 = a.getComponent(bc.getName());
             if(bc2 != null) {
                 bc.copyTo(bc2);
+            }
+        }
+        
+        for(String comp : enabledComponents.keySet()) {
+            if(enabledComponents.get(comp)) {
+                a.enableComponent(comp);
+            }
+            else {
+                a.disableComponent(comp);
             }
         }
     }

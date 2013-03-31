@@ -31,4 +31,19 @@ public class ShopScreenFactory {
         
         return ss;
     }
+    
+    public static ShopScreen create(float x, float y) {
+        ShopScreen ss = new ShopScreen();
+        
+        Collection<ShopItem> items = Application.get().getLogic().getGame().getShop().getAvailableItems();
+        int indx = 0;
+        for(ShopItem i : items) {
+            ss.addItemSlot(x + 30 + indx * 90, y, i);
+            indx++;
+        }
+        
+        ss.addScreenItem(new CancelButton(x+30, y+90));
+        
+        return ss;
+    }
 }

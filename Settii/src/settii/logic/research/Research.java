@@ -172,6 +172,12 @@ public class Research {
         if(name.equalsIgnoreCase("Update Damage")) {
             return new UpdateDamageEvent(res, effect);
         }
+        else if(name.equalsIgnoreCase("Update Range")) {
+            return new UpdateRangeEvent(res, effect);
+        }
+        else if(name.equalsIgnoreCase("New ShopItem")) {
+            return new NewShopItemEvent(res);
+        }
         
         return null;
     }

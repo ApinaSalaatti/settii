@@ -8,6 +8,7 @@ import settii.views.humanView.renderer.Texture;
 public interface IScreenItem {
     public void render();
     public boolean isVisible();
+    public void setVisible(boolean v);
     public boolean isSelected();
     public boolean isClicked();
     public boolean beingDragged();

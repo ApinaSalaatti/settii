@@ -32,7 +32,7 @@ public class SpriteBatch {
         + "attribute vec4 " + ATTR_COLOR + ";\n"
         + "attribute vec2 " + ATTR_TEXCOORD + ";\n"
         + "attribute vec2 " + ATTR_POSITION + ";\n"
-        + "uniform vec2 offset;\n"
+        //+ "uniform vec2 offset;\n"
         + "varying vec4 vColor;\n"
         + "varying vec2 vTexCoord; \n"
         + "void main() {\n"

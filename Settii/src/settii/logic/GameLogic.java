@@ -19,23 +19,28 @@ import settii.physics.Physics;
  */
 public class GameLogic implements IGameLogic {
     public enum GameState {
-        MAIN_MENU, PLAYING, QUITTING
+        UNINITIALIZED, INITIALIZED, MAIN_MENU, PLAYING, PAUSED, GAME_LOST, QUITTING
     }
  
     public GameState currentState;
     
     private ActorManager actorManager;
     private HashMap<Long, GameActor> actors;
+    private ArrayList<Long> toDelete;
+    private ArrayList<GameActor> created;
     private SettiLogic game;
     private Physics physics;
     
     public GameLogic() {
         actorManager = new ActorManager();
         actors = new HashMap<Long, GameActor>();
+        toDelete = new ArrayList<Long>();
+        created = new ArrayList<GameActor>();
         game = null;
         physics = null;
         
-        changeState(GameState.MAIN_MENU);
+        //changeState(GameState.UNINITIALIZED);
+        currentState = GameState.UNINITIALIZED;
         
         Application.get().getEventManager().register(ActorDestroyedEvent.eventType, new ActorDestroyedListener(this));
         Application.get().getEventManager().register(GameStateChangeEvent.eventType, new GameStateChangeListener(this));
@@ -48,25 +53,45 @@ public class GameLogic implements IGameLogic {
         }
         
         // TODO replace this with proper initialization of levels or somesuch stuff.
-        game = new SettiLogic(this);
+        //game = new SettiLogic(this);
         
         physics = new Physics(this);
         if(!physics.init()) {
             return false;
         }
         
+        game = new SettiLogic(this);
+        
+        currentState = GameState.INITIALIZED;
+        
         return true;
     }
     
     public void changeState(GameState newState) {
         switch(newState) {
+            case INITIALIZED:
+                currentState = GameState.INITIALIZED;
+                break;
             case MAIN_MENU:
                 clear();
+                actorManager.clear();
+                currentState = GameState.MAIN_MENU;
                 break;
             case PLAYING:
+                if(currentState != GameState.PAUSED) {
+                    game.start();
+                }
+                currentState = GameState.PLAYING;
+                break;
+            case PAUSED:
+                currentState = GameState.PAUSED;
+                break;
+            case GAME_LOST:
+                currentState = GameState.GAME_LOST;
                 break;
             case QUITTING:
                 Application.get().quit();
+                currentState = GameState.QUITTING;
                 break;
         }
     }
@@ -84,26 +109,52 @@ public class GameLogic implements IGameLogic {
     }
     
     public void update(long deltaMs) {
-        for(GameActor a : actors.values()) {
-            a.update(deltaMs);
+        //System.out.println(currentState);
+        // delete actors that were destroyd after the last update via events
+        for(long a : toDelete) {
+            deleteActor(a);
         }
-        
-        if(game != null) {
-            game.update(deltaMs);
+        toDelete.clear();
+        for(GameActor a : created) {
+            actors.put(a.getID(), a);
         }
+        created.clear();
         
-        if(physics != null) {
-            physics.update(deltaMs);
+        // game unitialized, an error has occured!
+        if(currentState == GameState.UNINITIALIZED) {
+            System.out.println("Game unitiliazied! Quitting.");
+            Application.get().quit();
+        }
+        if(currentState == GameState.INITIALIZED) {
+            // if we have only just initialized the game, go to main menu
+            Application.get().getEventManager().queueEvent(new GameStateChangeEvent(GameState.MAIN_MENU));
+        }
+        if(currentState == GameState.PLAYING) {
+            for(GameActor a : actors.values()) {
+                a.update(deltaMs);
+            }
+
+            if(game != null) {
+                game.update(deltaMs);
+            }
+
+            if(physics != null) {
+                physics.update(deltaMs);
+            }
         }
     }
     
-    public long createActor(String resource) {
+    public GameActor createActor(String resource) {
         GameActor actor = actorManager.createActor(resource);
-        actors.put(actor.getID(), actor);
-        return actor.getID();
+        created.add(actor);
+        //actors.put(actor.getID(), actor);
+        return actor;
     }
     public void deleteActor(long id) {
-        actors.remove(id);
+        if(actors.get(id) != null) {
+            actors.get(id).destroy();
+            actors.remove(id);
+        }
     }
     public GameActor getActor(long id) {
         return actors.get(id);
@@ -120,9 +171,29 @@ public class GameLogic implements IGameLogic {
         
         return null;
     }
+    public void enableComponent(String comp) {
+        Iterator<GameActor> it = actors.values().iterator();
+        
+        while(it.hasNext()) {
+            GameActor actor = it.next();
+            actor.enableComponent(comp);
+        }
+        actorManager.enableComponent(comp);
+    }
+    public void disableComponent(String comp) {
+        Iterator<GameActor> it = actors.values().iterator();
+        
+        while(it.hasNext()) {
+            GameActor actor = it.next();
+            actor.disableComponent(comp);
+        }
+        actorManager.disableComponent(comp);
+    }
+    
     public Collection<GameActor> getActors() {
         return actors.values();
     }
+    
     public void clear() {
         GameActor[] toClear = actors.values().toArray(new GameActor[actors.size()]);
         
@@ -133,7 +204,8 @@ public class GameLogic implements IGameLogic {
     
     @Override
     public void actorDestroyedListener(GameActor actor) {
-        actors.remove(actor.getID());
+        toDelete.add(actor.getID());
+        //deleteActor(actor.getID());
     }
     
     public void gameStateChangeListener(GameState state) {

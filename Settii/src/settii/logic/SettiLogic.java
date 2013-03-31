@@ -1,29 +1,23 @@
 package settii.logic;
 
-import java.awt.event.InputEvent;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseEvent;
 import java.util.ArrayList;
-import java.util.Iterator;
-import org.lwjgl.input.Mouse;
 import settii.Application;
 import settii.actorManager.components.*;
 import settii.actorManager.GameActor;
-import settii.views.ui.IScreenItem;
 import settii.eventManager.events.*;
-import settii.eventManager.EventManager;
 import settii.logic.listeners.*;
 import settii.logic.mouse.*;
 import settii.logic.shop.*;
 import settii.logic.research.*;
-import java.util.Random;
 import java.util.HashMap;
 import java.util.Collection;
 import settii.logic.sectors.*;
 
 import org.lwjgl.opengl.Display;
 import org.lwjgl.input.Keyboard;
-import settii.utils.MathUtil;
+import settii.eventManager.events.shopEvents.RepairBaseEvent;
+import settii.logic.messaging.Message;
+import settii.logic.messaging.Messaging;
 /**
  *
  * @author Merioksan Mikko
@@ -40,33 +34,31 @@ public class SettiLogic implements IGameLogic {
     
     private HashMap<Long, GameSector> sectors;
     private GameSector currentSector;
+    private ArrayList<WeaponLocation> weaponLocations;
     
     private long time;
-    private int sinceLastSpawn;
     
     private Player player;
     private Shop shop;
     private Research research;
     private long baseID;
+    private boolean playerLost;
+    
+    private EnemyManager enemyManager;
+    
+    private Messaging messaging;
     
     public SettiLogic(GameLogic logic) {
         mainLogic = logic;
-        
-        currentMouseAction = new DefaultAction();
         
         playerWeapons = new ArrayList<Long>();
         selectedWeapons = new ArrayList<Long>();
         
         buildings = new ArrayList<Long>();
         
-        time = 0;
+        weaponLocations = new ArrayList<WeaponLocation>();
         
-        player = new Player();
-        shop = new Shop();
-        research = new Research();
-        research.createFromXML(Application.get().getResourceManager().getDataManager().getData("assets/data/research.xml"));
-        
-        // register to listen input events
+        // register to listen events
         Application.get().getEventManager().register(KeyDownEvent.eventType, new KeyDownListener(this));
         Application.get().getEventManager().register(KeyUpEvent.eventType, new KeyUpListener(this));
         Application.get().getEventManager().register(MouseDownEvent.eventType, new MouseDownListener(this));
@@ -75,17 +67,8 @@ public class SettiLogic implements IGameLogic {
         Application.get().getEventManager().register(ActorDestroyedEvent.eventType, new ActorDestroyedListener(this));
         Application.get().getEventManager().register(FireWeaponEvent.eventType, new FireWeaponListener(this));
         Application.get().getEventManager().register(ChangeSectorEvent.eventType, new ChangeSectorListener(this));
-        
-        // cool testing stuff
-        sectors = new HashMap<Long, GameSector>();
-        sectors.put(1L, new NorthSector(1L));
-        sectors.put(2L, new EastSector(2L));
-        sectors.put(3L, new SouthSector(3L));
-        sectors.put(4L, new WestSector(4L));
-        Application.get().getEventManager().queueEvent(new ChangeSectorEvent(2L));
-        
-        baseID = mainLogic.createActor("assets/data/actors/base.xml");
-        mainLogic.getActor(baseID).move(Display.getWidth() * 1.5f, Display.getHeight() * 1.5f);
+        Application.get().getEventManager().register(RepairBaseEvent.eventType, new RepairBaseListener(this));
+        Application.get().getEventManager().register(WeaponFiredEvent.eventType, new WeaponFiredListener(this));
         
         /*
         long id2 = mainLogic.createActor("assets/data/actors/cannon.xml");
@@ -101,38 +84,78 @@ public class SettiLogic implements IGameLogic {
         }
         * 
         */
+        
+        player = new Player();
+        shop = new Shop();
+        research = new Research();
+        messaging = new Messaging();
+        enemyManager = new EnemyManager(this);
     }
     
     public SettiLogic(String resource) {
         
     }
     
+    public void start() {
+        currentMouseAction = new DefaultAction();
+        
+        playerWeapons.clear();
+        selectedWeapons.clear();
+        
+        buildings.clear();
+        
+        time = 0;
+        
+        player.createFromXML(null);
+        shop.createFromXML(Application.get().getResourceManager().getDataManager().getData("assets/data/shop.xml"));
+        research.createFromXML(Application.get().getResourceManager().getDataManager().getData("assets/data/research.xml"));
+        
+        // cool testing stuff
+        sectors = new HashMap<Long, GameSector>();
+        sectors.put(1L, new NorthSector(1L));
+        sectors.put(2L, new EastSector(2L));
+        sectors.put(3L, new SouthSector(3L));
+        sectors.put(4L, new WestSector(4L));
+        Application.get().getEventManager().queueEvent(new ChangeSectorEvent(1L));
+        
+        weaponLocations.clear();
+        weaponLocations.add(new WeaponLocation(400, 500));
+        
+        GameActor a = mainLogic.createActor("assets/data/actors/base.xml");
+        baseID = a.getID();
+        a.move(Display.getWidth() * 1.5f, Display.getHeight() * 1.5f);
+        playerLost = false;
+        
+        messaging.clear();
+        
+        enemyManager.start();
+    }
+    
     public void update(long deltaMs) {
-        time += deltaMs;
-        
-        sinceLastSpawn += deltaMs;
-        
-        if(sinceLastSpawn > 5000) {
-            int r = Application.get().getRNG().nextInt(6) + 1;
-            sectors.get(2L).spawnEnemy();
-            /*
-            if(r > 3) {
-                r = Application.get().getRNG().nextInt(Display.getWidth() - 100) + 50;
-                long id = mainLogic.createActor("assets/data/actors/enemy.xml");
-                GameActor a = mainLogic.getActor(id);
-                PhysicsComponent pc = (PhysicsComponent)a.getComponent("PhysicsComponent");
-                pc.setLocation(r, -50);
-                pc.setAngleRad(MathUtil.ANGLE_STRAIGHT_DOWN);
-                sinceLastSpawn = 0;
+        if(mainLogic.currentState == GameLogic.GameState.PLAYING) {
+            time += deltaMs;
+            
+            for(WeaponLocation wl : weaponLocations) {
+                wl.update(deltaMs);
             }
-            * 
-            */
-            sinceLastSpawn = 0;
         }
+        
+        if(playerLost) {
+            Application.get().getEventManager().queueEvent(new GameStateChangeEvent(GameLogic.GameState.GAME_LOST));
+        }
+        
+        //spawnEnemies(deltaMs);
+        enemyManager.update(deltaMs);
         
         player.update(deltaMs);
         
         currentMouseAction.update(deltaMs);
+        
+        messaging.update(deltaMs);
+    }
+    
+    public long getTime() {
+        return time;
     }
     
     public ArrayList<Long> getPlayerWeapons() {
@@ -146,6 +169,10 @@ public class SettiLogic implements IGameLogic {
     }
     public long getBaseID() {
         return baseID;
+    }
+    
+    public ArrayList<WeaponLocation> getWeaponLocations() {
+        return weaponLocations;
     }
     
     public Player getPlayer() {
@@ -172,22 +199,35 @@ public class SettiLogic implements IGameLogic {
         return currentMouseAction;
     }
     
+    public Message getCurrentMessage() {
+        return messaging.getCurrentMessage();
+    }
+    
+    public EnemyManager getEnemyManager() {
+        return enemyManager;
+    }
+    
     public boolean KeyDownListener(int key) {
-        if(key == Keyboard.KEY_LEFT) {
-            Application.get().getEventManager().queueEvent(new ChangeSectorEvent(4L));
-            return true;
-        }
-        if(key == Keyboard.KEY_RIGHT) {
-            Application.get().getEventManager().queueEvent(new ChangeSectorEvent(2L));
-            return true;
-        }
-        if(key == Keyboard.KEY_UP) {
-            Application.get().getEventManager().queueEvent(new ChangeSectorEvent(1L));
-            return true;
-        }
-        if(key == Keyboard.KEY_DOWN) {
-            Application.get().getEventManager().queueEvent(new ChangeSectorEvent(3L));
-            return true;
+        if(mainLogic.currentState == GameLogic.GameState.PLAYING) {
+            /*
+            if(key == Keyboard.KEY_LEFT) {
+                Application.get().getEventManager().queueEvent(new ChangeSectorEvent(4L));
+                return true;
+            }
+            if(key == Keyboard.KEY_RIGHT) {
+                Application.get().getEventManager().queueEvent(new ChangeSectorEvent(2L));
+                return true;
+            }
+            if(key == Keyboard.KEY_UP) {
+                Application.get().getEventManager().queueEvent(new ChangeSectorEvent(1L));
+                return true;
+            }
+            if(key == Keyboard.KEY_DOWN) {
+                Application.get().getEventManager().queueEvent(new ChangeSectorEvent(3L));
+                return true;
+            }
+            * 
+            */
         }
         return false;
     }
@@ -197,34 +237,54 @@ public class SettiLogic implements IGameLogic {
     }
     
     public boolean MouseDownListener(int mX, int mY, int button) {
-        currentMouseAction.onMouseDown(mX, mY, button);
-        return true;
+        if(mainLogic.currentState == GameLogic.GameState.PLAYING) {
+            if(currentMouseAction.onMouseDown(mX, mY, button)) {
+                return true;
+            }
+
+            for(long a : selectedWeapons) {
+                GameActor act = mainLogic.getActor(a);
+                PhysicsComponent pc = (PhysicsComponent)act.getComponent("PhysicsComponent");
+                pc.setTarget(mX, mY);
+            }
+
+            return true;
+        }
+        
+        return false;
     }
     
     public boolean MouseUpListener(int mX, int mY, int button) {
-        currentMouseAction.onMouseUp(mX, mY, button);
+        if(mainLogic.currentState == GameLogic.GameState.PLAYING) {
+            currentMouseAction.onMouseUp(mX, mY, button);
+        }
         return false;
     }
     
     public boolean PointerMoveListener(int mX, int mY, int mDX, int mDY) {
-        currentMouseAction.onPointerMove(mX, mY, mDX, mDY);
+        if(mainLogic.currentState == GameLogic.GameState.PLAYING) {
+            currentMouseAction.onPointerMove(mX, mY, mDX, mDY);
+        }
         
+        /*
         for(long a : selectedWeapons) {
             GameActor act = mainLogic.getActor(a);
             PhysicsComponent pc = (PhysicsComponent)act.getComponent("PhysicsComponent");
             pc.setTarget(mX, mY);
         }
+        * 
+        */
         return false;
     }
     
     public void selectActor(long id, boolean select) {
         if(select) {
             selectedWeapons.add(id);
-            Application.get().getEventManager().queueEvent(new ActorTextureChangeEvent(id, "selected"));
+            //Application.get().getEventManager().queueEvent(new ActorTextureChangeEvent(id, "selected"));
         }
         else {
             selectedWeapons.remove(id);
-            Application.get().getEventManager().queueEvent(new ActorTextureChangeEvent(id, "default"));
+            //Application.get().getEventManager().queueEvent(new ActorTextureChangeEvent(id, "default"));
         }
         Application.get().getEventManager().queueEvent(new ActorSelectedEvent(id, select));
     }
@@ -249,12 +309,14 @@ public class SettiLogic implements IGameLogic {
     
     @Override
     public void actorDestroyedListener(GameActor actor) {
-        player.actorDestroyedListener(actor);
-        
         // just try to remove the actor from EVERYWHERE!
         selectedWeapons.remove(actor.getID());
         playerWeapons.remove(actor.getID());
         buildings.remove(actor.getID());
+        
+        if(actor.getID() == baseID) {
+            playerLost = true;
+        }
     }
     
     public void fireWeaponListener(long id) {
@@ -269,5 +331,43 @@ public class SettiLogic implements IGameLogic {
     
     public void changeSectorListener(long id) {
         currentSector = sectors.get(id);
+    }
+    
+    public void repairBaseListener() {
+        GameActor base = mainLogic.getActor(baseID);
+        PhysicsComponent pc = (PhysicsComponent)base.getComponent("PhysicsComponent");
+        pc.setHealth(pc.getMaxHealth());
+    }
+    
+    public void weaponFiredListener(long actor) {
+        /*
+        GameActor a = mainLogic.getActor(actor);
+        WeaponsComponent wc1 = (WeaponsComponent)a.getComponent("WeaponsComponent");
+        PhysicsComponent pc1 = (PhysicsComponent)a.getComponent("PhysicsComponent");
+        StatusComponent sc1 = (StatusComponent)a.getComponent("StatusComponent");
+
+        String bullet = wc1.getBullet();
+        int damage = wc1.getDamage();
+        
+        long id = Application.get().getLogic().createActor(bullet);
+        GameActor bul = Application.get().getLogic().getActor(id);
+
+        float weaponDist = pc1.getHeight() / 2 + 10; // barrel of the gun is in front of the weapon
+
+        // calculate correct spot with angle of the actor
+        float bulletY = pc1.getY() - weaponDist * (float)Math.sin(pc1.getAngleRad());
+        float bulletX = pc1.getX() - weaponDist * (float)Math.cos(pc1.getAngleRad());
+        bul.move(bulletX, bulletY);
+
+        PhysicsComponent pc2 = (PhysicsComponent)bul.getComponent("PhysicsComponent");
+        StatusComponent sc2 = (StatusComponent)bul.getComponent("StatusComponent");
+        // the projectile must know who shot it to prevent friendly fire
+        sc2.setAllegiance(sc1.getAllegiance());
+
+        pc2.setDamage(damage);
+        pc2.setAngleRad(pc1.getAngleRad());
+        pc2.applyAcceleration(1.0f);
+        * 
+        */
     }
 }

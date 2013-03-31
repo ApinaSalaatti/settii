@@ -6,8 +6,10 @@ package settii.logic.mouse;
 
 import settii.Application;
 import settii.actorManager.GameActor;
-import settii.actorManager.components.WeaponsComponent;
-import settii.eventManager.events.FireWeaponEvent;
+import settii.actorManager.ai.AreaTargeting;
+import settii.actorManager.ai.HumanBasicWeaponAI;
+import settii.actorManager.components.AIComponent;
+import settii.actorManager.components.PhysicsComponent;
 
 /**
  *
@@ -25,23 +27,47 @@ public class DefaultAction implements IMouseAction {
             if(Application.get().getLogic().getGame().getPlayerWeapons().contains(id) || Application.get().getLogic().getGame().getBuildings().contains(id)) {
                 if(Application.get().getLogic().getGame().getSelectedWeapons().contains(id)) {
                     Application.get().getLogic().getGame().selectActor(id, false);
+                    return true;
                 }
                 else {
                     Application.get().getLogic().getGame().selectActor(id, true);
+                    return true;
                 }
             }
             else {
                 for(long a : Application.get().getLogic().getGame().getSelectedWeapons()) {
                     GameActor actor = Application.get().getLogic().getActor(a);
+                    
+                    PhysicsComponent pc = (PhysicsComponent)actor.getComponent("PhysicsComponent");
+                    pc.setTarget(mX, mY);
+                    AIComponent aic = (AIComponent)actor.getComponent("AIComponent");
+                    if(aic != null) {
+                        if(aic.getAI() instanceof HumanBasicWeaponAI) {
+                            HumanBasicWeaponAI hbwai = (HumanBasicWeaponAI)aic.getAI();
+                            hbwai.setGuardAngle((float)Math.atan2(pc.getY() - mY, pc.getX() - mX));
+                            
+                            if(id != -1) {
+                                hbwai.setTarget(id);
+                            }
+                            else {
+                                hbwai.setTarget(mX, mY);
+                            }
+                        }
+                    }
+                    /*
                     WeaponsComponent wc = (WeaponsComponent)actor.getComponent("WeaponsComponent");
                     if(wc != null) {
                         Application.get().getEventManager().queueEvent(new FireWeaponEvent(a));
+                        return true;
                     }
+                    */
                 }
+                Application.get().getLogic().getGame().clearSelectedWeapons();
             }
         }
         else if(button == 1) {
             Application.get().getLogic().getGame().clearSelectedWeapons();
+            return true;
         }
         
         return false;

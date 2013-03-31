@@ -89,8 +89,12 @@ public class ResearchItem implements Sellable {
     }
     
     @Override
-    public void buy() {
+    public boolean buy() {
+        if(researched) {
+            return false;
+        }
         Application.get().getEventManager().queueEvent(event);
         researched = true;
+        return true;
     }
 }

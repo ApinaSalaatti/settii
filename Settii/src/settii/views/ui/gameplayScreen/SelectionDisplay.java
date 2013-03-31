@@ -40,6 +40,7 @@ public class SelectionDisplay extends BaseScreenItem {
                 Renderer.get().drawText("Health: " + pc.getHealth(), x+40, y+70, 0.5f);
                 if(wc != null) {
                     Renderer.get().drawText("Damage: " + wc.getDamage(), x+40, y+90, 0.5f);
+                    Renderer.get().drawText("Range: " + wc.getRange(), x+40, y+110, 0.5f);
                 }
             }
         }

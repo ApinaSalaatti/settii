@@ -19,7 +19,17 @@ public class ShopScreen extends BaseGameScreen {
     }
     
     public void addItemSlot(float x, float y, ShopItem i) {
-        itemSlots.add(new ShopItemButton(x, y, i));
+        ShopItemButton sib = new ShopItemButton(x, y, i);
+        sib.setTooltip(i.getName() + "\n" + i.getDescription());
+        itemSlots.add(sib);
+    }
+    
+    @Override
+    public void update(long deltaMs) {
+        super.update(deltaMs);
+        for(ShopItemButton sib : itemSlots) {
+            sib.update(deltaMs);
+        }
     }
     
     @Override
@@ -50,6 +60,20 @@ public class ShopScreen extends BaseGameScreen {
             }
         }
         
-        return true;
+        return false;
+    }
+    
+    @Override
+    public boolean onPointerMove(int mX, int mY, int mDX, int mDY) {
+        if(super.onPointerMove(mX, mY, mDX, mDY)) {
+            return true;
+        }
+        for(ShopItemButton sib : itemSlots) {
+            if(sib.onPointerMove(mX, mY, mDX, mDY)) {
+                return true;
+            }
+        }
+        
+        return false;
     }
 }

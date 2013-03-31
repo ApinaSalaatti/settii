@@ -15,12 +15,7 @@ public class ResearchScreenFactory {
         
         rs.addScreenItem(new Background((Display.getWidth() - Background.WIDTH) / 2, (Display.getHeight() - Background.HEIGHT) / 2));
         
-        Collection<ResearchItem> items = Application.get().getLogic().getGame().getResearch().getRoots();
-        int indx = 0;
-        for(ResearchItem ri : items) {
-            createTree(rs, ri, 100+indx*90, 100);
-            indx++;
-        }
+        createTrees(rs);
         
         rs.addScreenItem(new PopScreenButton(Display.getWidth() - 35, 20, 30, 30, "assets/graphics/ui/xButton.png"));
         
@@ -37,6 +32,15 @@ public class ResearchScreenFactory {
                     indx++;
                 }
             }
+        }
+    }
+    
+    public static void createTrees(ResearchScreen rs) {
+        Collection<ResearchItem> items = Application.get().getLogic().getGame().getResearch().getRoots();
+        int indx = 0;
+        for(ResearchItem ri : items) {
+            createTree(rs, ri, 100+indx*180, 100);
+            indx++;
         }
     }
 }

@@ -1,0 +1,14 @@
+<Actor>
+	<PhysicsComponent>
+		<width>50</width>
+		<height>50</height>
+		<health>100</health>
+		<turnspeed>0</turnspeed>
+		<Rendering><animationFile>assets/graphics/actors/libresse.png</animationFile></Rendering>
+	</PhysicsComponent>
+	<StatusComponent>
+		<ActorName>Libresse Invisible</ActorName>
+		<ActorType>basic</ActorType>
+		<Allegiance>friendly</Allegiance>
+	</StatusComponent>
+</Actor>

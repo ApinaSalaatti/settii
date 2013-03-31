@@ -49,31 +49,33 @@ public class MapDisplay extends BaseScreenItem {
             StatusComponent sc = (StatusComponent)a.getComponent("StatusComponent");
             PhysicsComponent pc = (PhysicsComponent)a.getComponent("PhysicsComponent");
             
-            if(pc != null && sc != null && sc.getAllegiance().equals("enemy")) {
-                float aX = (float)pc.getX() * (float)((float)(WIDTH - 20) / (Display.getWidth() * 3.0f));
-                float aY = (float)pc.getY() * (float)((float)(HEIGHT - 20) / (Display.getHeight() * 3.0f));
-                if(sc.getType().equals("projectile")) {
-                    Renderer.get().draw(enemyProj, 5+x+aX, 5+y+aY);
+            if(pc.getX() > 0 && pc.getX() < Display.getWidth() * 3 && pc.getY() > 0 && pc.getY() < Display.getHeight() * 3) {
+                if(pc != null && sc != null && sc.getAllegiance().equals("enemy")) {
+                    float aX = (float)pc.getX() * (float)((float)(WIDTH - 20) / (Display.getWidth() * 3.0f));
+                    float aY = (float)pc.getY() * (float)((float)(HEIGHT - 20) / (Display.getHeight() * 3.0f));
+                    if(sc.getType().equals("projectile")) {
+                        Renderer.get().draw(enemyProj, 5+x+aX, 5+y+aY);
+                    }
+                    else {
+                        Renderer.get().draw(enemy, 5+x+aX, 5+y+aY);
+                    }
                 }
-                else {
-                    Renderer.get().draw(enemy, 5+x+aX, 5+y+aY);
-                }
-            }
-            else if(pc != null && sc != null && sc.getAllegiance().equals("friendly")) {
-                float aX = (float)pc.getX() * (float)((float)(WIDTH - 20) / (Display.getWidth() * 3.0f));
-                float aY = (float)pc.getY() * (float)((float)(HEIGHT - 20) / (Display.getHeight() * 3.0f));
-                if(sc.getType().equals("projectile")) {
-                    Renderer.get().draw(friendlyProj, 5+x+aX, 5+y+aY);
-                }
-                else if(sc.getType().equals("base")) {
-                    float healthPercent = (float)((float)pc.getHealth() / (float)pc.getMaxHealth());
-                    float baseXOffset = baseHealthy.getWidth() / 2;
-                    float baseYOffset = baseHealthy.getHeight() / 2;
-                    renderBase(healthPercent, 5+x+aX-baseXOffset, 5+y+aY-baseYOffset);
-                    //Renderer.get().draw(base, 5+x + aX - baseXOffset, 5+y + aY - baseYOffset);
-                }
-                else {
-                    Renderer.get().draw(friendly, 5+x+aX, 5+y+aY);
+                else if(pc != null && sc != null && sc.getAllegiance().equals("friendly")) {
+                    float aX = (float)pc.getX() * (float)((float)(WIDTH - 20) / (Display.getWidth() * 3.0f));
+                    float aY = (float)pc.getY() * (float)((float)(HEIGHT - 20) / (Display.getHeight() * 3.0f));
+                    if(sc.getType().equals("projectile")) {
+                        Renderer.get().draw(friendlyProj, 5+x+aX, 5+y+aY);
+                    }
+                    else if(sc.getType().equals("base")) {
+                        float healthPercent = (float)((float)pc.getHealth() / (float)pc.getMaxHealth());
+                        float baseXOffset = baseHealthy.getWidth() / 2;
+                        float baseYOffset = baseHealthy.getHeight() / 2;
+                        renderBase(healthPercent, 5+x+aX-baseXOffset, 5+y+aY-baseYOffset);
+                        //Renderer.get().draw(base, 5+x + aX - baseXOffset, 5+y + aY - baseYOffset);
+                    }
+                    else {
+                        Renderer.get().draw(friendly, 5+x+aX, 5+y+aY);
+                    }
                 }
             }
         }

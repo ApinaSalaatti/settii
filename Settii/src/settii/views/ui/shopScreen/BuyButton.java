@@ -17,7 +17,7 @@ public class BuyButton extends BaseScreenItem {
     @Override
     public boolean onMouseDown(int mX, int mY, int button) {
         if(mX > x && mX < x + width && mY > y && mY < y + height) {
-            GameActor toBuy = Application.get().getLogic().getActor(Application.get().getLogic().createActor("assets/data/actors/cannon.xml"));
+            //GameActor toBuy = Application.get().getLogic().getActor(Application.get().getLogic().createActor("assets/data/actors/cannon.xml"));
             //Application.get().getLogic().getGame().setCurrentMouseAction(new PlaceWeaponAction(toBuy));
             Application.get().getHumanView().popScreen();
             return true;

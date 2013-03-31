@@ -4,7 +4,7 @@
 		<Description>Increases the basic cannon's damage by 10</Description>
 		<Event>
 			<Name>Update Damage</Name>
-			<Resource>assets/data/actors/cannon.xml</Resource>
+			<Resource>assets/data/actors/durexThin.xml</Resource>
 			<Effect>10</Effect>
 		</Event>
 		<Sprite>assets/graphics/research/research.png</Sprite>
@@ -44,12 +44,77 @@
 		<Cost>4000</Cost>
 	</ResearchItem>
 	
+	<ResearchItem>
+		<Name>Cannon range update #1</Name>
+		<Description>Further increases the basic cannon's range by 100</Description>
+		<Event>
+			<Name>Update Range</Name>
+			<Resource>assets/data/actors/whiteCell.xml</Resource>
+			<Effect>1000</Effect>
+		</Event>
+		<Sprite>assets/graphics/research/research.png</Sprite>
+		<Cost>4000</Cost>
+	</ResearchItem>
+	
+	<ResearchItem>
+		<Name>Durex</Name>
+		<Description>A Durex with normal thickness. Still feels nice and offers good protection!</Description>
+		<Event>
+			<Name>New ShopItem</Name>
+			<Resource>assets/data/actors/durex.xml</Resource>
+		</Event>
+		<Sprite>assets/graphics/research/research.png</Sprite>
+		<Cost>1000</Cost>
+	</ResearchItem>
+	
+	<ResearchItem>
+		<Name>Sultan Strawberry</Name>
+		<Description>A tasty one! Offers great pleasure and protection even from oral enemies.</Description>
+		<Event>
+			<Name>New ShopItem</Name>
+			<Resource>assets/data/actors/sultan.xml</Resource>
+		</Event>
+		<Sprite>assets/graphics/research/research.png</Sprite>
+		<Cost>1000</Cost>
+	</ResearchItem>
+	
+	<ResearchItem>
+		<Name>Magic</Name>
+		<Description>Puts pressure in exactly the right places. Allows for very rapid defence.</Description>
+		<Event>
+			<Name>New ShopItem</Name>
+			<Resource>assets/data/actors/magic.xml</Resource>
+		</Event>
+		<Sprite>assets/graphics/research/research.png</Sprite>
+		<Cost>1000</Cost>
+	</ResearchItem>
+	
+	<ResearchItem>
+		<Name>Contraceptive Pill</Name>
+		<Description>An incredibly easy-to-use protection method! It's so easy it even targets on its own.</Description>
+		<Event>
+			<Name>New ShopItem</Name>
+			<Resource>assets/data/actors/contraceptivePill.xml</Resource>
+		</Event>
+		<Sprite>assets/graphics/research/research.png</Sprite>
+		<Cost>1000</Cost>
+	</ResearchItem>
+	
 	<ResearchTree>
 		<Item value="Cannon update #1">
 			<Item value="Cannon update #2">
 				<Item value="Cannon update #4"></Item>
 			</Item>
 			<Item value="Cannon update #3"></Item>
+		</Item>
+		
+		<Item value="Cannon range update #1"></Item>
+		
+		<Item value="Durex">
+			<Item value="Sultan Strawberry">
+				<Item value="Magic"></Item>
+				<Item value="Contraceptive Pill"></Item>
+			</Item>
 		</Item>
 	</ResearchTree>
 </Research>

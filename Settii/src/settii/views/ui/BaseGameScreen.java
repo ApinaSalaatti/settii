@@ -45,6 +45,13 @@ public class BaseGameScreen implements IGameScreen {
     }
     
     @Override
+    public void makeVisible(boolean v) {
+        for(IScreenItem item : screenItems) {
+            item.setVisible(v);
+        }
+    }
+    
+    @Override
     public boolean onMouseDown(int mX, int mY, int button) {
         Iterator<IScreenItem> it = screenItems.iterator();
         

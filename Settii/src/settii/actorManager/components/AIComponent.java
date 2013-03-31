@@ -8,6 +8,7 @@ import settii.actorManager.GameActor;
 import settii.Application;
 import settii.actorManager.BaseComponent;
 import settii.eventManager.events.FireWeaponEvent;
+import settii.actorManager.ai.*;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -16,12 +17,10 @@ import org.w3c.dom.NodeList;
  * @author Merioksan Mikko
  */
 public class AIComponent extends BaseComponent {
-    private long target;
-    private int targetY;
+    private BaseAI ai;
     
     public AIComponent() {
-        target = -1;
-        targetY = -1;
+        
     }
     
     @Override
@@ -31,23 +30,12 @@ public class AIComponent extends BaseComponent {
     
     @Override
     public void update(long deltaMs) {
-        PhysicsComponent ownPC = (PhysicsComponent)owner.getComponent("PhysicsComponent");
-        if(targetY < 0) {
-            targetY = Application.get().getRNG().nextInt(100) + 100;
-        }
-        if(ownPC.getY() < targetY) {
-            moveDown();
-        }
-        else {
-            if(ownPC.getSpeed() > 0) {
-                stop();
-            }
-            else {
-                targetAndShoot();
-            }
+        if(ai != null) {
+            ai.update(deltaMs);
         }
     }
     
+    /*
     public void moveDown() {
         PhysicsComponent ownPC = (PhysicsComponent)owner.getComponent("PhysicsComponent");
         if(ownPC != null) {
@@ -64,51 +52,42 @@ public class AIComponent extends BaseComponent {
         PhysicsComponent ownPC = (PhysicsComponent)owner.getComponent("PhysicsComponent");
         ownPC.applyAcceleration(-1.0f);
     }
+    */
     
-    public void targetAndShoot() {
-        target = Application.get().getLogic().getGame().getBaseID();
-        if(Application.get().getLogic().getGame().getBuildings().contains(target)) {
-            target();
-        }
-        else if(Application.get().getLogic().getGame().getPlayerWeapons().contains(target)) {
-            target();
-        }
-        else {
-            if(Application.get().getLogic().getGame().getBuildings().size() > 0) {
-                int t = Application.get().getRNG().nextInt(Application.get().getLogic().getGame().getBuildings().size());
-                //target = Application.get().getLogic().getGame().getBuildings().get(t);
-            }
-            else if(Application.get().getLogic().getGame().getPlayerWeapons().size() > 0) {
-                int t = Application.get().getRNG().nextInt(Application.get().getLogic().getGame().getPlayerWeapons().size());
-                //target = Application.get().getLogic().getGame().getPlayerWeapons().get(t);
-            }
-            target();
-        }
+    public BaseAI getAI() {
+        return ai;
     }
     
-    public void target() {
-        GameActor t = Application.get().getLogic().getActor(target);
-        if(t != null) {
-            PhysicsComponent tPC = (PhysicsComponent)t.getComponent("PhysicsComponent");
-            if(tPC != null) {
-                PhysicsComponent ownPC = (PhysicsComponent)owner.getComponent("PhysicsComponent");
-                if(ownPC != null) {
-                    if(ownPC.getTargetX() != tPC.getX() || ownPC.getTargetY() != tPC.getY()) {
-                        ownPC.setTarget(tPC.getX(), tPC.getY());
-                    }
-                    if(ownPC.getAngleRad() < ownPC.getTargetAngle() + 0.1 && ownPC.getAngleRad() > ownPC.getTargetAngle() - 0.1) {
-                        WeaponsComponent wc = (WeaponsComponent)owner.getComponent("WeaponsComponent");
-                        if(wc != null) {
-                            Application.get().getEventManager().queueEvent(new FireWeaponEvent(owner.getID()));
-                        }
-                    }
-                }
-            }
-        }
+    @Override
+    public void destroy() {
+        super.destroy();
+        ai.destroy();
     }
     
     @Override
     public void createFromXML(NodeList attributes) {
-        
+        for(int i = 0; i < attributes.getLength(); i++) {
+            Node node = attributes.item(i);
+            if(node.getNodeType() == Node.ELEMENT_NODE) {
+                if(node.getNodeName().equalsIgnoreCase("EnemyBasic")) {
+                    ai = new EnemyBasicAI(owner.getID());
+                }
+                else if(node.getNodeName().equalsIgnoreCase("HumanBasicWeapon")) {
+                    ai = new HumanBasicWeaponAI(owner.getID());
+                }
+                else if(node.getNodeName().equalsIgnoreCase("HumanAutomaticWeapon")) {
+                    ai = new HumanAutomaticWeaponAI(owner.getID());
+                }
+                else if(node.getNodeName().equalsIgnoreCase("EnemyBoss")) {
+                    ai = new EnemyBossAI(owner.getID());
+                }
+                else if(node.getNodeName().equalsIgnoreCase("EnemySlave")) {
+                    ai = new EnemySlaveAI(owner.getID());
+                }
+                
+                ai.createFromXML(node.getChildNodes());
+            }
+        }
     }
+   
 }

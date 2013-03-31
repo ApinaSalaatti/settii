@@ -1,0 +1,21 @@
+<Actor>
+	<PhysicsComponent>
+		<width>50</width>
+		<height>50</height>
+		<health>100</health>
+		<Rendering><animationFile>assets/graphics/actors/whiteCell.png</animationFile></Rendering>
+	</PhysicsComponent>
+	<AIComponent>
+		<HumanBasicWeapon></HumanBasicWeapon>
+	</AIComponent>
+	<WeaponsComponent>
+		<damage>10</damage>
+		<rateOfFire>1000</rateOfFire>
+		<bullet>assets/data/actors/bullet.xml</bullet>
+	</WeaponsComponent>
+	<StatusComponent>
+		<ActorName>White Cell</ActorName>
+		<ActorType>basic</ActorType>
+		<Allegiance>friendly</Allegiance>
+	</StatusComponent>
+</Actor>

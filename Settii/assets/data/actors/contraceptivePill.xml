@@ -1,0 +1,26 @@
+<Actor>
+	<PhysicsComponent>
+		<width>50</width>
+		<height>50</height>
+		<health>100</health>
+		<Rendering><animationFile>assets/graphics/actors/contraceptivePill.png</animationFile></Rendering>
+	</PhysicsComponent>
+	<AIComponent>
+		<HumanAutomaticWeapon></HumanAutomaticWeapon>
+	</AIComponent>
+	<WeaponsComponent>
+		<weapon>
+			<HormoneBlaster>
+				<rateOfFire>0.5</rateOfFire>
+				<damage>1</damage>
+				<bullet>assets/data/actors/bullet.xml</bullet>
+				<range>2000</range>
+			</HormoneBlaster>
+		</weapon>
+	</WeaponsComponent>
+	<StatusComponent>
+		<ActorName>Contraceptive Pill</ActorName>
+		<ActorType>basic</ActorType>
+		<Allegiance>friendly</Allegiance>
+	</StatusComponent>
+</Actor>

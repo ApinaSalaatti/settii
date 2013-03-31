@@ -6,7 +6,7 @@
 		<damage>11</damage>
 		<lifetime>5000</lifetime>
 		<turnspeed>0.0</turnspeed>
-		<Rendering><default>assets/graphics/actors/bullet.png</default></Rendering>
+		<Rendering><animationFile>assets/graphics/actors/bullet.png</animationFile></Rendering>
 	</PhysicsComponent>
 	<StatusComponent>
 		<ActorType>projectile</ActorType>

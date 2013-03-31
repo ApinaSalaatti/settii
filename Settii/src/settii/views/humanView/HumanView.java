@@ -5,21 +5,25 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import settii.views.ui.*;
 import settii.Application;
-import settii.actorManager.GameActor;
 import settii.eventManager.events.*;
 
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
+import settii.logic.GameLogic;
+import settii.utils.MathUtil;
+import settii.utils.actions.PlayAnimationAction;
 import settii.views.IGameView;
+import settii.views.humanView.animation.AnimationData;
+import settii.views.humanView.audioPlayer.AudioPlayer;
 import settii.views.humanView.renderer.Renderer;
 import settii.views.humanView.listeners.*;
 import settii.views.ui.gameplayScreen.*;
 import settii.views.ui.mainMenuScreen.*;
 import settii.views.ui.commandCenterScreen.*;
-import settii.views.humanView.renderer.BitmapFont;
 import settii.views.humanView.renderer.Texture;
+import settii.views.ui.highScoreScreen.HighScoreScreenFactory;
 /**
  *
  * @author Merioksan Mikko
@@ -35,16 +39,26 @@ public class HumanView implements IGameView {
     private GameScene scene;
     private ArrayDeque<IGameScreen> screens;
     
+    private ArrayList<PlayAnimationAction> animations;
+    
+    private AudioPlayer audioPlayer;
+    //private IntBuffer currentMusic;
+    
     private Tooltip tooltip; // this shit's here so I can render it last. There's prolly a better way?
 
     public HumanView() {
         scene = new GameScene();
         screens = new ArrayDeque<IGameScreen>();
         
+        audioPlayer = new AudioPlayer();
+        
         camera = new Camera();
         
-        screens.addFirst(GameplayScreenFactory.create());
+        animations = new ArrayList<PlayAnimationAction>();
         
+        //screens.addFirst(GameplayScreenFactory.create());
+        
+        Application.get().getEventManager().register(GameStateChangeEvent.eventType, new GameStateChangeListener(this));
         Application.get().getEventManager().register(ChangeSectorEvent.eventType, new ChangeSectorListener(this));
         
         tooltip = null;
@@ -60,30 +74,6 @@ public class HumanView implements IGameView {
         mouseX = Display.getWidth() / 2;
         mouseY = Display.getHeight() / 2;
         
-        GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
-        //Texture load = Application.get().getResourceManager().getTextureManager().getTexture("assets/graphics/ui/loading.png");
-        Renderer.get().begin();
-        //Renderer.get().draw(load, -112, -192);
-        Renderer.get().drawText("LOADING STUFF...", 200, 300);
-        Renderer.get().end();
-        Display.update();
-        // load the (biggest and most used) assets
-        // TODO: figure out how to do this more efficiently...
-        try {
-            Application.get().getResourceManager().getTextureManager().getTexture("assets/graphics/ui/cursor.png");
-            Application.get().getResourceManager().getTextureManager().getTexture("assets/graphics/ui/commandcenterscreen/background.png");
-            Application.get().getResourceManager().getTextureManager().getTexture("assets/graphics/ui/commandcenterscreen/baseHealthy.png");
-            Application.get().getResourceManager().getTextureManager().getTexture("assets/graphics/ui/commandcenterscreen/baseDamaged.png");
-            Application.get().getResourceManager().getTextureManager().getTexture("assets/graphics/ui/commandcenterscreen/baseCritical.png");
-            Application.get().getResourceManager().getTextureManager().getTexture("assets/graphics/ui/commandcenterscreen/mapDisplay.png");
-            Application.get().getResourceManager().getTextureManager().getTexture("assets/graphics/ui/researchscreen/background.png");
-            Application.get().getResourceManager().getTextureManager().getTexture("assets/graphics/ui/gameplayscreen/commandCenterButton.png");
-            Application.get().getResourceManager().getTextureManager().getTexture("assets/graphics/ui/cursor.png");
-        }
-        catch(Exception e) {
-            System.out.println("Failed to load assets!");
-        }
-        
         return true;
     }
 
@@ -98,11 +88,16 @@ public class HumanView implements IGameView {
         tooltip = t;
     }
     
+    public Camera getCamera() {
+        return camera;
+    }
+    
     @Override
     public void update(long deltaMs) {
         getInput();
 
         camera.update(deltaMs);
+        scene.update(deltaMs);
         
         // clear screen
         GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
@@ -115,6 +110,25 @@ public class HumanView implements IGameView {
         Renderer.get().setOffset(x, y);
         Renderer.get().begin();
         scene.render();
+        
+        Iterator<PlayAnimationAction> i = animations.iterator();
+        while(i.hasNext()) {
+            PlayAnimationAction paa = i.next();
+            paa.update(deltaMs);
+            if(paa.finished()) {
+                i.remove();
+            }
+            else {
+                Renderer.get().draw(paa.getTexture(), paa.getX(), paa.getY(), paa.getFrameWidth(), paa.getFrameHeight(), paa.getFrameWidth() / 2, paa.getFrameHeight() / 2, MathUtil.degToRad(90), paa.getU(), paa.getV(), paa.getU2(), paa.getV2());
+            }
+        }
+        /*
+         * x = x - ro.getTexWidth() / 2;
+        y = y - ro.getTexHeight() / 2;
+        
+        batch.draw(ro.getTexture(), x, y, ro.getWidth(), ro.getHeight(), ro.getTexWidth() / 2, ro.getTexHeight() / 2, MathUtil.toRenderAngle(ro.getRotation()), ro.getU(), ro.getV(), ro.getU2(), ro.getV2());
+         * 
+         */
         Renderer.get().end();
         
         // render and update user interface stuff
@@ -130,12 +144,14 @@ public class HumanView implements IGameView {
         }
         
         // render cursor and tooltip last
-        Renderer.get().draw(cursor, mouseX-cursor.getWidth()/2, mouseY-cursor.getHeight()/2);
+        //Renderer.get().draw(cursor, mouseX-cursor.getWidth()/2, mouseY-cursor.getHeight()/2);
         if(tooltip != null) {
             tooltip.render();
         }
         
         Renderer.get().end();
+        
+        audioPlayer.update(deltaMs);
     }
     
     public void addScreen(IGameScreen screen) {
@@ -146,6 +162,10 @@ public class HumanView implements IGameView {
     }
     public void clearScreens() {
         screens.clear();
+    }
+    
+    public void playAnimation(Texture tex, AnimationData data, long length, float x, float y) {
+        animations.add(new PlayAnimationAction(tex, data, length, x, y));
     }
     
     // keyboard input
@@ -159,11 +179,17 @@ public class HumanView implements IGameView {
 	}
         
         // mouse input
-        float mDX = Mouse.getDX() * 2.5f; // mouse sensitivity 2.5, testing stuff...
-        float mDY = -Mouse.getDY() * 2.5f; // invert y-axis to match all our coordinates
+        //float mDX = Mouse.getDX() * 2.5f; // mouse sensitivity 2.5, testing stuff...
+        //float mDY = -Mouse.getDY() * 2.5f; // invert y-axis to match all our coordinates
         
-        mouseX += mDX;
-        mouseY += mDY;
+        //mouseX += mDX;
+        //mouseY += mDY;
+        
+        float mDX = Mouse.getDX();
+        float mDY = -Mouse.getDY();
+        mouseX = Mouse.getX();
+        mouseY = Display.getHeight() - Mouse.getY();
+        /*
         if(mouseX < 0) {
             mouseX = 0;
         }
@@ -176,6 +202,8 @@ public class HumanView implements IGameView {
         else if(mouseY > Display.getHeight()) {
             mouseY = Display.getHeight();
         }
+        * 
+        */
         
         while(Mouse.next()) {
             int button = Mouse.getEventButton();
@@ -183,10 +211,10 @@ public class HumanView implements IGameView {
             int mY = Display.getHeight() - Mouse.getEventY(); // invert the y-axis to match all our coordinates
             if(button != -1) { // check that a state of a mouse button has changed
                 if(Mouse.getEventButtonState()) {
-                    onMouseDown((int)mouseX, (int)mouseY, button);
+                    onMouseDown((int)mX, (int)mY, button);
                 }
                 else {
-                    onMouseUp((int)mouseX, (int)mouseY, button);
+                    onMouseUp((int)mX, (int)mY, button);
                 }
             }
         }
@@ -224,10 +252,6 @@ public class HumanView implements IGameView {
         
         if(camera.onKeyDown(key)) {
             return true;
-        }
-        
-        if(key == Keyboard.KEY_C || key == Keyboard.KEY_ESCAPE) {
-            addScreen(CommandCenterScreenFactory.create());
         }
         
         Application.get().getEventManager().queueEvent(new KeyDownEvent(key));
@@ -333,5 +357,26 @@ public class HumanView implements IGameView {
         float sY = Application.get().getLogic().getGame().getSector(id).getY();
         
         camera.setLocation(sX, sY);
+    }
+    
+    public void gameStateChangeListener(GameLogic.GameState state) {
+        switch(state) {
+            case PLAYING:
+                //audioPlayer.stop(currentMusic);
+                clearScreens();
+                addScreen(GameplayScreenFactory.create());
+                audioPlayer.playMusic("gameplay", true);
+                break;
+            case MAIN_MENU:
+                //audioPlayer.stop(currentMusic);
+                clearScreens();
+                addScreen(MainMenuScreenFactory.create());
+                audioPlayer.playMusic("main menu", true);
+                break;
+            case GAME_LOST:
+                clearScreens();
+                addScreen(HighScoreScreenFactory.create());
+                break;
+        }
     }
 }

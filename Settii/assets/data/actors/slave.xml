@@ -1,0 +1,29 @@
+<Actor>
+	<PhysicsComponent>
+		<width>35</width>
+		<height>36</height>
+		<health>12</health>
+		<Rendering><animationFile>assets/graphics/actors/cock.png</animationFile></Rendering>
+	</PhysicsComponent>
+	<WeaponsComponent>
+		<weapon>
+			<SpermGun>
+				<rateOfFire>0.5</rateOfFire>
+				<damage>1</damage>
+				<bullet>assets/data/actors/bullet.xml</bullet>
+				<range>2000</range>
+			</SpermGun>
+		</weapon>
+	</WeaponsComponent>
+	<AIComponent>
+		<EnemySlave></EnemySlave>
+	</AIComponent>
+	<InventoryComponent>
+		<money>100</money>
+	</InventoryComponent>
+	<StatusComponent>
+		<ActorType>basic</ActorType>
+		<Allegiance>enemy</Allegiance>
+		<ExpValue>10</ExpValue>
+	</StatusComponent>
+</Actor>

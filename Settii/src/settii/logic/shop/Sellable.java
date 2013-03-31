@@ -9,6 +9,6 @@ package settii.logic.shop;
  * @author ApinaSalaatti
  */
 public interface Sellable {
-    public void buy();
+    public boolean buy();
     public int getValue();
 }

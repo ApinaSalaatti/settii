@@ -17,6 +17,8 @@ import settii.utils.MathUtil;
  * @author Merioksan Mikko
  */
 public class PhysicsComponent extends BaseComponent {
+    // z-axis location, only used for rendering
+    private int z;
     // location and size
     private float x, y;
     private float width, height;
@@ -39,13 +41,14 @@ public class PhysicsComponent extends BaseComponent {
         // actors that have not been properly placed live in negativland
         x = -1000;
         y = -1000;
+        z = 0; // default z-coordinate is always 0
         
-        maxAcceleration = 0.1f;
+        maxAcceleration = 10.0f;
         accelerationRate = 0.0f;
-        maxSpeed = 1.0f;
+        maxSpeed = 200.0f;
         angleRad = MathUtil.ANGLE_STRAIGHT_UP; // default angle is straight up
         targetAngle = angleRad; // when we spawn, we are targeting where we are headed
-        turnSpeed = 0.001f; // default turn speed
+        turnSpeed = 0.002f; // default turn speed (radians per millisecond)
         hitbox = new Rectangle(0, 0, 0, 0);
         lifetime = 0;
         lived = 0;
@@ -56,6 +59,12 @@ public class PhysicsComponent extends BaseComponent {
         return "PhysicsComponent";
     }
     
+    public void setZ(int z) {
+        this.z = z;
+    }
+    public int getZ() {
+        return z;
+    }
     public float getX() {
         return x;
     }
@@ -103,6 +112,10 @@ public class PhysicsComponent extends BaseComponent {
         health -= d;
         
         if(health <= 0) {
+            StatusComponent sc = (StatusComponent)owner.getComponent("StatusComponent");
+            if(sc.getAllegiance().equalsIgnoreCase("enemy")) {
+                Application.get().getEventManager().queueEvent(new EnemyDestroyedEvent(owner));
+            }
             Application.get().getEventManager().queueEvent(new ActorDestroyedEvent(owner));
             return true;
         }
@@ -165,6 +178,13 @@ public class PhysicsComponent extends BaseComponent {
         return hitbox;
     }
     
+    public void setLifetime(long l) {
+        lifetime = l;
+    }
+    public long getLifetime() {
+        return lifetime;
+    }
+    
     @Override
     public void update(long deltaMs) {
         speed += maxAcceleration * accelerationRate * deltaMs;
@@ -180,8 +200,8 @@ public class PhysicsComponent extends BaseComponent {
         
         float oldX = x;
         float oldY = y;
-        float newX = x + speedX * deltaMs;
-        float newY = y + speedY * deltaMs;
+        float newX = x + speedX * (float)(deltaMs / 1000f);
+        float newY = y + speedY * (float)(deltaMs / 1000f);
         
         if(oldX != newX || oldY != newY) {
             setLocation(newX, newY);
@@ -197,19 +217,37 @@ public class PhysicsComponent extends BaseComponent {
         }
     }
     
+    public float getMaxSpeed() {
+        return maxSpeed;
+    }
+    
     public void turn(long deltaMs) {
         float targetAngleDeg = MathUtil.radToDeg(targetAngle);
         float currentAngleDeg = MathUtil.radToDeg(angleRad);
         
         WeaponsComponent wc = (WeaponsComponent)owner.getComponent("WeaponsComponent");
         if(currentAngleDeg < targetAngleDeg - 1f) {
-            setAngleRad(angleRad + turnSpeed * deltaMs);
+            float amount = 0.0f;
+            if(targetAngleDeg - currentAngleDeg > 180) {
+                amount = -turnSpeed * deltaMs;
+            }
+            else {
+                amount = turnSpeed * deltaMs;
+            }
+            setAngleRad(angleRad + amount);
             if(wc != null) {
                 wc.setReady(false);
             }
         }
         else if(currentAngleDeg > targetAngleDeg + 1f) {
-            setAngleRad(angleRad - turnSpeed * deltaMs);
+            float amount = 0.0f;
+            if(currentAngleDeg - targetAngleDeg > 180) {
+                amount = turnSpeed * deltaMs;
+            }
+            else {
+                amount = -turnSpeed * deltaMs;
+            }
+            setAngleRad(angleRad + amount);
             if(wc != null) {
                 wc.setReady(false);
             }
@@ -219,6 +257,11 @@ public class PhysicsComponent extends BaseComponent {
                 wc.setReady(true);
             }
         }
+        
+        if(angleRad < 0) {
+            angleRad += MathUtil.degToRad(360);
+        }
+        
         float over = angleRad - MathUtil.degToRad(360);
         if(over > 0) {
             angleRad = 0 + over;
@@ -257,12 +300,41 @@ public class PhysicsComponent extends BaseComponent {
                     turnSpeed = Float.parseFloat(value.getNodeValue());
                 }
                 else if(node.getNodeName().equalsIgnoreCase("rendering")) {
-                    HashMap<String, String> files = new HashMap<String, String>();
-                    while(value != null) {
-                        files.put(value.getNodeName(), value.getFirstChild().getNodeValue());
-                        value = value.getNextSibling();
+                    Node n = node.getFirstChild();
+                    String file = "";
+                    int size = 64; // default size of sprite
+
+                    while(n != null) {
+                        if(n.getNodeType() == Node.ELEMENT_NODE && n.getNodeName().equalsIgnoreCase("animationFile")) {
+                            file = n.getFirstChild().getNodeValue();
+                        }
+                        if(n.getNodeType() == Node.ELEMENT_NODE && n.getNodeName().equalsIgnoreCase("spriteSize")) {
+                            size = Integer.parseInt(n.getFirstChild().getNodeValue());
+                        }
+                        if(n.getNodeType() == Node.ELEMENT_NODE && n.getNodeName().equalsIgnoreCase("z")) {
+                            z = Integer.parseInt(n.getFirstChild().getNodeValue());
+                        }
+                        n = n.getNextSibling();
                     }
-                    Application.get().getEventManager().queueEvent(new RenderableActorCreatedEvent(new RenderObject(owner.getID(), x, y, files)));
+                    Application.get().getEventManager().queueEvent(new RenderableActorCreatedEvent(new RenderObject(owner.getID(), x, y, file, size, z)));
+                    /*
+                    boolean fileSet = false;
+                    if(node.getFirstChild().getNodeName().equalsIgnoreCase("animationFile") && !fileSet) {
+                        String file = node.getFirstChild().getFirstChild().getNodeValue();
+                        Application.get().getEventManager().queueEvent(new RenderableActorCreatedEvent(new RenderObject(owner.getID(), x, y, file)));
+                        fileSet = true;
+                    }
+                    else if(!fileSet) {
+                        HashMap<String, String> files = new HashMap<String, String>();
+                        while(value != null) {
+                            files.put(value.getNodeName(), value.getFirstChild().getNodeValue());
+                            value = value.getNextSibling();
+                        }
+                        Application.get().getEventManager().queueEvent(new RenderableActorCreatedEvent(new RenderObject(owner.getID(), x, y, files)));
+                        fileSet = true;
+                    }
+                    * 
+                    */
                 }
             }
         }

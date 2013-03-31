@@ -36,4 +36,17 @@ public class DataManager {
             e.printStackTrace();
         }
     }
+    
+    public void preload(String root) {
+        File file = new File(root);
+        File[] files = file.listFiles();
+        for(File f : files) {
+            if(f.isDirectory()) {
+                preload(f.getPath());
+            }
+            else if(f.isFile()) {
+                getData(f.getPath());
+            }
+        }
+    }
 }

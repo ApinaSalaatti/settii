@@ -74,10 +74,10 @@ public class Renderer {
         float y = ro.getY() + offsetY;
         
         // draw sprites so that the location of the actor is in the center of the sprite
-        x = x - ro.getTexture().getWidth() / 2;
-        y = y - ro.getTexture().getHeight() / 2;
+        x = x - ro.getTexWidth() / 2;
+        y = y - ro.getTexHeight() / 2;
         
-        batch.draw(ro.getTexture(), x, y, ro.getWidth(), ro.getHeight(), ro.getTexture().getWidth() / 2, ro.getTexture().getHeight() / 2, MathUtil.toRenderAngle(ro.getRotation()), ro.getTexture().getU(), ro.getTexture().getV(), ro.getTexture().getU2(), ro.getTexture().getV2());
+        batch.draw(ro.getTexture(), x, y, ro.getWidth(), ro.getHeight(), ro.getTexWidth() / 2, ro.getTexHeight() / 2, MathUtil.toRenderAngle(ro.getRotation()), ro.getU(), ro.getV(), ro.getU2(), ro.getV2());
     }
     
     public void draw(RenderObject ro, float width, float height) {
@@ -94,6 +94,14 @@ public class Renderer {
     
     public void draw(Texture tex, float x, float y, float u, float v, float u2, float v2) {
         batch.draw(tex, x, y, tex.getWidth() * u2, tex.getHeight(), tex.getWidth() / 2, tex.getHeight() / 2, MathUtil.toRenderAngle(MathUtil.ANGLE_STRAIGHT_UP), u, v, u2, v2);
+    }
+    
+    public void draw(Texture tex, float x, float y, float w, float h, float originX, float originY, float angle, float u, float v, float u2, float v2) {
+        x = x + offsetX;
+        y = y + offsetY;
+        x = x - w / 2;
+        y = y - h / 2;
+        batch.draw(tex, x, y, w, h, originX, originY, MathUtil.toRenderAngle(angle), u, v, u2, v2);
     }
     
     public void draw(Texture tex, float[] vertices, int offset) {

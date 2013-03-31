@@ -115,6 +115,7 @@ public class TextureManager {
             
             textures.put(resource, tex);
         } catch(Exception e) {
+            System.out.println("CANNOT READ FILE " + resource);
             e.printStackTrace();
         }
     }
@@ -187,10 +188,22 @@ public class TextureManager {
      * @return The loaded buffered image
      * @throws IOException Indicates a failure to find a resource
      */
-    private BufferedImage loadImage(String ref) throws IOException 
-    { 
+    private BufferedImage loadImage(String ref) throws IOException { 
         BufferedImage bufferedImage = ImageIO.read(new File(ref));
  
         return bufferedImage;
+    }
+    
+    public void preload(String root) {
+        File file = new File(root);
+        File[] files = file.listFiles();
+        for(File f : files) {
+            if(f.isDirectory()) {
+                preload(f.getPath());
+            }
+            else if(f.isFile()) {
+                getTexture(f.getPath());
+            }
+        }
     }
 }

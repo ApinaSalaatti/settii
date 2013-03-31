@@ -22,6 +22,7 @@ public class CommandCenterScreenFactory {
         ccs.addScreenItem(new GameStateChangeButton(25, (Display.getHeight() - MapDisplay.HEIGHT) / 2 + 190, 60, 60, GameLogic.GameState.QUITTING, "assets/graphics/ui/quit.png"));
         ccs.addScreenItem(new MapDisplay((Display.getWidth() - MapDisplay.WIDTH) / 2, (Display.getHeight() - MapDisplay.HEIGHT) / 2));
         ccs.addScreenItem(new StatusDisplay());
+        ccs.addScreenItem(new RepairBaseButton(10, Display.getHeight() - 10 - 120));
 
         return ccs;
     }

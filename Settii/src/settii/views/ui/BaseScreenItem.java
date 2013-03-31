@@ -81,6 +81,10 @@ public class BaseScreenItem implements IScreenItem {
     public boolean isVisible() {
         return visible;
     }
+    @Override
+    public void setVisible(boolean v) {
+        visible = v;
+    }
     
     @Override
     public boolean isSelected() {
@@ -120,7 +124,7 @@ public class BaseScreenItem implements IScreenItem {
     
     @Override
     public void render() {
-        if(sprite != null) {
+        if(sprite != null && visible) {
             float offsetX = (sprite.getWidth() - width) / 2;
             float offsetY = (sprite.getHeight() - height) / 2;
             
@@ -168,6 +172,7 @@ public class BaseScreenItem implements IScreenItem {
             pointerOver = false;
             pointerHovered = 0;
             renderTooltip = false;
+            Application.get().getHumanView().setTooltip(null);
         }
         return false;
     }

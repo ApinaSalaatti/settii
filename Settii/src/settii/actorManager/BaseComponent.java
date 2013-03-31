@@ -41,6 +41,13 @@ public class BaseComponent {
     }
     
     /**
+     * If the component needs stuff to happen when the actor is destroyed, it overrides this (and should propably also call this).
+     */
+    public void destroy() {
+        owner = null;
+    }
+    
+    /**
      * Copies a components attributs to another component. Override this shit in components!
      * 
      * @param bc the component to copy this component's attributes to

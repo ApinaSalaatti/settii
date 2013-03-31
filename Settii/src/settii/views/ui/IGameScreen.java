@@ -11,6 +11,7 @@ import java.awt.Graphics2D;
 public interface IGameScreen {
     public void render();
     public void update(long deltaMs);
+    public void makeVisible(boolean v);
     public boolean onMouseDown(int mX, int mY, int button);
     public boolean onMouseUp(int mX, int mY, int button);
     public boolean onKeyDown(int key);

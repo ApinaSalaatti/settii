@@ -11,7 +11,7 @@ import settii.views.ui.BaseScreenItem;
 public class GameStateChangeButton extends BaseScreenItem {
     private GameLogic.GameState state;
     
-    public GameStateChangeButton(int x, int y, int w, int h, GameLogic.GameState s, String res) {
+    public GameStateChangeButton(float x, float y, float w, float h, GameLogic.GameState s, String res) {
         super(x, y, w, h, res);
         state = s;
     }
